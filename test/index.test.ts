@@ -7,7 +7,6 @@ const {
   IMAGES_NOT_FOUND_ERR,
   IMAGES_NOT_JPG_ERR,
   IMAGES_WRONG_ASPECT_RATIO_ERR,
-  LOGIN_ERR,
 } = require('../src/errors');
 
 const IP = new InstagramPublisher({
