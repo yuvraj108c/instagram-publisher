@@ -90,8 +90,7 @@ test('Ensure all images with aspect ratio 1:1', async () => {
     async () => await IP.createSlideshow(images, 'caption')
   ).rejects.toThrowError(IMAGES_WRONG_ASPECT_RATIO_ERR);
 
-  fs.rmdirSync(IMG_DIR, { recursive: true });
-  fs.rmSync('cookies.json', { force: true });
+  fs.unlink(IMG_DIR + 'cookies.json');
 });
 
 async function createImage(w: number, h: number, n: string) {
