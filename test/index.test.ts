@@ -17,16 +17,18 @@ const IP = new InstagramPublisher({
 
 const IMG_DIR = 'images/';
 
-test('Validate login credentials', async () => {
-  const client = new InstagramPublisher({
-    email: 'sdfdsf@gmail.com',
-    password: 'sdfdfds32423sfds',
-  });
-  await expect(
-    async () => await client.createSlideshow(['2.jpg', '1.jpg'], 'caption')
-  ).rejects.toThrowError(LOGIN_ERR);
-  fs.writeFileSync('cookies.json', JSON.stringify([]));
-});
+fs.mkdirSync(IMG_DIR);
+
+// test('Validate login credentials', async () => {
+//   const client = new InstagramPublisher({
+//     email: 'sdfdsf@gmail.com',
+//     password: 'sdfdfds32423sfds',
+//   });
+//   await expect(
+//     async () => await client.createSlideshow(['2.jpg', '1.jpg'], 'caption')
+//   ).rejects.toThrowError(LOGIN_ERR);
+// });
+fs.writeFileSync('cookies.json', JSON.stringify([{}]));
 
 test('Ensure atleast 2 images are provided', async () => {
   const images = ['./a.jpg'];
@@ -44,8 +46,11 @@ test('Ensure max 10 images are provided', async () => {
   ).rejects.toThrowError(MAX_10_IMAGES_ERR);
 });
 
-test('Ensure all images exists', async () => {
-  const images = ['./1.jpg', './2.jpg'];
+test('Ensure all images exists locally', async () => {
+  const images = [
+    './1.jpg',
+    'https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png',
+  ];
   await expect(
     async () => await IP.createSlideshow(images, 'caption')
   ).rejects.toThrowError(IMAGES_NOT_FOUND_ERR);
@@ -53,10 +58,6 @@ test('Ensure all images exists', async () => {
 
 test('Ensure all images are JPG', async () => {
   const images: string[] = [];
-
-  if (!fs.existsSync(IMG_DIR)) {
-    fs.mkdirSync(IMG_DIR);
-  }
 
   for (let i = 0; i < 3; i++) {
     await createImage(1000, 1000, `${i}.jpg`);
@@ -68,16 +69,10 @@ test('Ensure all images are JPG', async () => {
   await expect(
     async () => await IP.createSlideshow(images, 'caption')
   ).rejects.toThrowError(IMAGES_NOT_JPG_ERR);
-
-  fs.rmdirSync(IMG_DIR, { recursive: true });
 });
 
 test('Ensure all images with aspect ratio 1:1', async () => {
   const images: string[] = [];
-
-  if (!fs.existsSync(IMG_DIR)) {
-    fs.mkdirSync(IMG_DIR);
-  }
 
   for (let i = 0; i < 3; i++) {
     await createImage(1000, 1000, `${i}.jpg`);
@@ -90,7 +85,8 @@ test('Ensure all images with aspect ratio 1:1', async () => {
     async () => await IP.createSlideshow(images, 'caption')
   ).rejects.toThrowError(IMAGES_WRONG_ASPECT_RATIO_ERR);
 
-  fs.unlink(IMG_DIR + 'cookies.json', () => {});
+  fs.rmdirSync(IMG_DIR, { recursive: true });
+  fs.unlinkSync('cookies.json', () => {});
 });
 
 async function createImage(w: number, h: number, n: string) {
