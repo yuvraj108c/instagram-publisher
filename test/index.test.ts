@@ -34,10 +34,6 @@ test('Ensure atleast 2 images are provided', async () => {
   await expect(
     async () => await IP.createSlideshow(images, 'caption')
   ).rejects.toThrowError(MIN_2_IMAGES_ERR);
-
-  await expect(async () => await IP.createSlideshow()).rejects.toThrowError(
-    MIN_2_IMAGES_ERR
-  );
 });
 
 test('Ensure max 10 images are provided', async () => {

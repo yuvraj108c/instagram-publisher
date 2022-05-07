@@ -48,12 +48,12 @@ class InstagramPublisher {
       },
     };
 
-    if (this._validateCookies() && requestOptions.headers != undefined) {
+    if (this._validateCookies() && requestOptions.headers !== undefined) {
       const cookies: ICookie[] = JSON.parse(
         fs.readFileSync(COOKIES_FILE_PATH, 'utf-8')
       );
 
-      const csrftoken: String = cookies.filter(c => c.key == 'csrftoken')[0]
+      const csrftoken: String = cookies.filter(c => c.key === 'csrftoken')[0]
         .value;
       requestOptions.headers['X-CSRFToken'] = csrftoken;
       requestOptions.headers.Cookie = cookies
@@ -67,11 +67,11 @@ class InstagramPublisher {
     return fs.existsSync(COOKIES_FILE_PATH);
   }
 
-  async createSlideshow(images: string[], caption: string = '') {
+  async createSlideshow(images: string[] = [], caption: string = '') {
     if (this._validateCookies()) {
       // validate images
 
-      if (images == null || images.length < 2) {
+      if (images.length < 2) {
         throw new Error(MIN_2_IMAGES_ERR);
       }
       if (images.length > 10) {
@@ -88,7 +88,7 @@ class InstagramPublisher {
 
       // check if jpg
       const imagesAreJPG: Boolean =
-        imageSizes.filter(i => i.type == 'jpg').length == images.length;
+        imageSizes.filter(i => i.type === 'jpg').length === images.length;
 
       if (!imagesAreJPG) {
         throw new Error(IMAGES_NOT_JPG_ERR);
@@ -96,7 +96,7 @@ class InstagramPublisher {
 
       // check 1:1 aspect ratio
       const imagesAreOneOne: Boolean =
-        imageSizes.filter(i => i.height == i.width).length == images.length;
+        imageSizes.filter(i => i.height === i.width).length === images.length;
 
       if (!imagesAreOneOne) {
         throw new Error(IMAGES_WRONG_ASPECT_RATIO_ERR);
