@@ -48,6 +48,7 @@
         "@types/is-url": "^1.2.30",
         "@types/request-promise-native": "^1.0.18",
         "@types/tough-cookie": "^4.0.2",
+        "sharp": "^0.30.4",
         "husky": "^7.0.4",
         "size-limit": "^7.0.8",
         "tsdx": "^0.14.1",

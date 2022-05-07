@@ -1,5 +1,13 @@
 import fs from 'fs';
 import { OptionsWithUri, RequestPromiseAPI } from 'request-promise-native';
+import {
+  IMAGES_NOT_FOUND_ERR,
+  IMAGES_NOT_JPG_ERR,
+  IMAGES_WRONG_ASPECT_RATIO_ERR,
+  LOGIN_ERR,
+  MAX_10_IMAGES_ERR,
+  MIN_2_IMAGES_ERR,
+} from './errors';
 import { ICookie, Image, Login, LoginRes } from './types';
 
 const request = require('request-promise-native');
@@ -62,22 +70,12 @@ class InstagramPublisher {
   async createSlideshow(images: string[], caption: string = '') {
     if (this._validateCookies()) {
       // validate images
-      if (images == null || images.length == 0) {
-        throw new Error(
-          '[InstagramPublisher/createSlideshow] - No images provided'
-        );
-      }
 
+      if (images == null || images.length < 2) {
+        throw new Error(MIN_2_IMAGES_ERR);
+      }
       if (images.length > 10) {
-        throw new Error(
-          '[InstagramPublisher/createSlideshow] - Maximum 10 images allowed'
-        );
-      }
-
-      if (images.length < 2) {
-        throw new Error(
-          '[InstagramPublisher/createSlideshow] - Minimum 2 images required'
-        );
+        throw new Error(MAX_10_IMAGES_ERR);
       }
 
       // check if images exists
@@ -85,9 +83,7 @@ class InstagramPublisher {
       try {
         imageSizes = images.map(sizeOf);
       } catch (error) {
-        throw new Error(
-          '[InstagramPublisher/createSlideshow] - Not all images exists'
-        );
+        throw new Error(IMAGES_NOT_FOUND_ERR);
       }
 
       // check if jpg
@@ -95,9 +91,7 @@ class InstagramPublisher {
         imageSizes.filter(i => i.type == 'jpg').length == images.length;
 
       if (!imagesAreJPG) {
-        throw new Error(
-          '[InstagramPublisher/createSlideshow] - Only .jpg images are allowed'
-        );
+        throw new Error(IMAGES_NOT_JPG_ERR);
       }
 
       // check 1:1 aspect ratio
@@ -105,9 +99,7 @@ class InstagramPublisher {
         imageSizes.filter(i => i.height == i.width).length == images.length;
 
       if (!imagesAreOneOne) {
-        throw new Error(
-          '[InstagramPublisher/createSlideshow] - Not all images have 1:1 aspect ratio'
-        );
+        throw new Error(IMAGES_WRONG_ASPECT_RATIO_ERR);
       }
 
       const photosUploaded = [];
@@ -248,7 +240,7 @@ class InstagramPublisher {
     const loginRes: LoginRes = res.body;
 
     if (!loginRes.authenticated) {
-      throw new Error('InstagramPublisher/Login - Invalid credentials');
+      throw new Error(LOGIN_ERR);
     }
 
     console.info(
