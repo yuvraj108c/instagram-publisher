@@ -3,6 +3,17 @@
     "license": "MIT",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
+    "repository": "yuvraj108c/instagram-publisher",
+    "description": "Publish Instagram Slideshows in JS",
+    "keywords": [
+        "instagram",
+        "slideshow",
+        "ig",
+        "api",
+        "web",
+        "photos",
+        "jpg"
+    ],
     "files": [
         "dist",
         "src"
@@ -31,7 +42,7 @@
         "trailingComma": "es5"
     },
     "name": "instagram-publisher",
-    "author": "yuvraj",
+    "author": "Yuvraj Seegolam",
     "module": "dist/instagram-publisher.esm.js",
     "size-limit": [
         {
