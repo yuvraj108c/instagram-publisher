@@ -22,8 +22,8 @@ export async function createImage(
   return path;
 }
 
-export function createVideo(): string {
-  const path = `${FILES_DIR}/vid.mp4`;
+export function createVideo(f: string): string {
+  const path = `${FILES_DIR}/${f}`;
   fs.writeFileSync(path, '');
   return path;
 }

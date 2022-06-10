@@ -4,12 +4,16 @@ import {
   MAX_CAPTION_LENGTH,
   MAX_SLIDESHOW_IMAGES,
   MIN_SLIDESHOW_IMAGES,
+  VALID_VIDEO_ASPECT_RATIOS,
+  VALID_VIDEO_EXTENSION,
 } from './config';
 import {
   CAPTION_TOO_LONG_ERR,
   IMAGES_NOT_FOUND_ERR,
   IMAGES_NOT_JPG_ERR,
   IMAGES_WRONG_ASPECT_RATIO_ERR,
+  INVALID_VIDEO_ASPECT_RATIO,
+  INVALID_VIDEO_FORMAT,
   LOGIN_ERR,
   LOGIN_ERR_COOKIES,
   MAX_10_IMAGES_ERR,
@@ -84,7 +88,10 @@ class InstagramPublisher {
     return fs.existsSync(COOKIES_FILE_PATH);
   }
 
-  async createSlideshow(images: string[] = [], caption: string = '') {
+  async createSlideshow(
+    images: string[] = [],
+    caption: string = ''
+  ): Promise<boolean> {
     if (this._validateCookies()) {
       // validate images
 
@@ -149,11 +156,13 @@ class InstagramPublisher {
         console.info(
           `[InstagramPublisher] - Status: ${createSlideshowResponse.status} (${photosUploaded.length} uploaded, ${errors.length} failed)`
         );
+        return createSlideshowResponse.status === 'ok';
       }
+      return false;
     } else {
       await this._login();
       await this._setHeaders();
-      await this.createSlideshow(images, caption);
+      return await this.createSlideshow(images, caption);
     }
   }
 
@@ -311,10 +320,8 @@ class InstagramPublisher {
     video_path: string;
     thumbnail_path: string;
     caption: string;
-  }) {
+  }): Promise<boolean> {
     if (this._validateCookies()) {
-      // validate image
-
       // check if images exists
       let imageSize: Image;
       try {
@@ -340,6 +347,27 @@ class InstagramPublisher {
         throw new Error(CAPTION_TOO_LONG_ERR);
       }
 
+      // Validate video extension
+      const video_extension: any = video_path.split('.')[
+        video_path.split('.').length - 1
+      ];
+
+      if (!VALID_VIDEO_EXTENSION.find(e => e === video_extension)) {
+        throw new Error(INVALID_VIDEO_FORMAT);
+      }
+
+      // Retrieve video data
+      const video_info = await ffprobe(video_path, {
+        path: ffprobeStatic.path,
+      });
+      const { duration, width, height, display_aspect_ratio } = video_info[
+        'streams'
+      ].filter((i: any) => i.codec_type === 'video')[0];
+
+      if (!VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)) {
+        throw new Error(INVALID_VIDEO_ASPECT_RATIO);
+      }
+
       try {
         const timestamp = Date.now();
         const request_1_headers = {
@@ -357,14 +385,6 @@ class InstagramPublisher {
           uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
           method: 'GET',
         });
-
-        // Retrieve video data
-        const video_info = await ffprobe(video_path, {
-          path: ffprobeStatic.path,
-        });
-        const { duration, width, height } = video_info['streams'].filter(
-          (i: any) => i.codec_type === 'video'
-        )[0];
 
         const video_file = fs.readFileSync(video_path);
 
@@ -416,10 +436,21 @@ class InstagramPublisher {
         await this.sleep(500);
         await this._publishThumbnail(timestamp, thumbnail_path, height, width);
 
-        await this.sleep(5000);
-        await this._publishVideoReel({ caption, upload_id: timestamp });
+        const wait_time = 60; //sec
+        console.info(
+          `[InstagramPublisher] - Waiting for video to process (${wait_time} sec)`
+        );
+        await this.sleep(wait_time * 1000);
+        const uploaded_res = await this._publishVideoReel({
+          caption,
+          upload_id: timestamp,
+        });
 
-        console.info(`[InstagramPublisher] - Video reel created`);
+        const reel_created: boolean = JSON.parse(uploaded_res).status == 'ok';
+        console.info(
+          `[InstagramPublisher] - Video reel created: ${reel_created}`
+        );
+        return reel_created;
       } catch (error) {
         throw new Error(
           `[InstagramPublisher] - Failed to create video reel - ${error}`
@@ -428,7 +459,7 @@ class InstagramPublisher {
     } else {
       await this._login();
       await this._setHeaders();
-      await this.createReel({ video_path, thumbnail_path, caption });
+      return await this.createReel({ video_path, thumbnail_path, caption });
     }
   }
 
@@ -462,7 +493,7 @@ class InstagramPublisher {
         video_subtitles_enabled: '0',
       },
     };
-    await request(options);
+    return await request(options);
   }
 
   async _publishThumbnail(

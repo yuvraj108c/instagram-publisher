@@ -28,3 +28,8 @@ export const LOGIN_ERR_COOKIES =
 
 export const CAPTION_TOO_LONG_ERR =
   '[InstagramPublisher] - Caption should not exceed 2200 characters';
+
+export const INVALID_VIDEO_FORMAT =
+  '[InstagramPublisher] - Only .mp4 video files are supported';
+
+export const INVALID_VIDEO_ASPECT_RATIO = `[InstagramPublisher] - Only '1:1', '16:9', '9:16' video aspect ratios are supported`;
