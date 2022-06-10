@@ -1,10 +1,10 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "repository": "yuvraj108c/instagram-publisher",
-    "description": "Publish Instagram Slideshows in JS",
+    "description": "Publish Instagram Slideshows & Reels in nodeJS",
     "keywords": [
         "instagram",
         "slideshow",
