@@ -1,6 +1,12 @@
 import fs from 'fs';
 import { OptionsWithUri, RequestPromiseAPI } from 'request-promise-native';
 import {
+  MAX_CAPTION_LENGTH,
+  MAX_SLIDESHOW_IMAGES,
+  MIN_SLIDESHOW_IMAGES,
+} from './config';
+import {
+  CAPTION_TOO_LONG_ERR,
   IMAGES_NOT_FOUND_ERR,
   IMAGES_NOT_JPG_ERR,
   IMAGES_WRONG_ASPECT_RATIO_ERR,
@@ -8,6 +14,9 @@ import {
   LOGIN_ERR_COOKIES,
   MAX_10_IMAGES_ERR,
   MIN_2_IMAGES_ERR,
+  THUMBNAIL_NOT_FOUND_ERR,
+  THUMBNAIL_NOT_JPG_ERR,
+  VIDEO_NOT_FOUND_ERR,
 } from './errors';
 import { ICookie, Image, Login, LoginRes } from './types';
 
@@ -24,9 +33,10 @@ const COOKIES_FILE_PATH: string = 'cookies.json';
 class InstagramPublisher {
   _request: RequestPromiseAPI = request;
   _loginData: Login;
-  _cookies: string;
-  _useragent: string;
-  _csrftoken: string;
+  _cookies: string = '';
+  _useragent: string =
+    'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Avant Browser; Avant Browser; .NET CLR 1.0.3705; .NET CLR 1.1.4322; Media Center PC 4.0; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)';
+  _csrftoken: string = '';
 
   constructor({ email, password }: Login) {
     this._loginData = { email, password };
@@ -78,11 +88,16 @@ class InstagramPublisher {
     if (this._validateCookies()) {
       // validate images
 
-      if (images.length < 2) {
+      if (images.length < MIN_SLIDESHOW_IMAGES) {
         throw new Error(MIN_2_IMAGES_ERR);
       }
-      if (images.length > 10) {
+      if (images.length > MAX_SLIDESHOW_IMAGES) {
         throw new Error(MAX_10_IMAGES_ERR);
+      }
+
+      // validate caption size
+      if (caption.length > MAX_CAPTION_LENGTH) {
+        throw new Error(CAPTION_TOO_LONG_ERR);
       }
 
       // check if images exists
@@ -284,7 +299,7 @@ class InstagramPublisher {
     return uploadResponse;
   }
 
-  async sleep(milliseconds) {
+  async sleep(milliseconds: number) {
     await new Promise(resolve => setTimeout(resolve, milliseconds));
   }
 
@@ -298,6 +313,33 @@ class InstagramPublisher {
     caption: string;
   }) {
     if (this._validateCookies()) {
+      // validate image
+
+      // check if images exists
+      let imageSize: Image;
+      try {
+        imageSize = sizeOf(thumbnail_path);
+      } catch (error) {
+        throw new Error(THUMBNAIL_NOT_FOUND_ERR);
+      }
+
+      // check if jpg
+      const imageIsJPG: Boolean = imageSize.type === 'jpg';
+
+      if (!imageIsJPG) {
+        throw new Error(THUMBNAIL_NOT_JPG_ERR);
+      }
+
+      // check if video exists
+      if (!fs.existsSync(video_path)) {
+        throw new Error(VIDEO_NOT_FOUND_ERR);
+      }
+
+      // validate caption size
+      if (caption.length > MAX_CAPTION_LENGTH) {
+        throw new Error(CAPTION_TOO_LONG_ERR);
+      }
+
       try {
         const timestamp = Date.now();
         const request_1_headers = {
@@ -420,13 +462,15 @@ class InstagramPublisher {
         video_subtitles_enabled: '0',
       },
     };
-    request(options, function(error, response) {
-      if (error) throw new Error(error);
-      console.log(response.body);
-    });
+    await request(options);
   }
 
-  async _publishThumbnail(upload_id, image_path, video_height, video_width) {
+  async _publishThumbnail(
+    upload_id: number,
+    image_path: string,
+    video_height: number,
+    video_width: number
+  ) {
     const image_file = fs.readFileSync(image_path);
     const options = {
       method: 'POST',

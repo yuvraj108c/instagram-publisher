@@ -7,6 +7,14 @@ export const MAX_10_IMAGES_ERR =
 export const IMAGES_NOT_FOUND_ERR =
   '[InstagramPublisher] - Not all images found';
 
+export const THUMBNAIL_NOT_FOUND_ERR =
+  '[InstagramPublisher] - Thumbnail image not found';
+
+export const THUMBNAIL_NOT_JPG_ERR =
+  '[InstagramPublisher] - Thumbnail image is not .jpg';
+
+export const VIDEO_NOT_FOUND_ERR = '[InstagramPublisher] - Video not found';
+
 export const IMAGES_NOT_JPG_ERR =
   '[InstagramPublisher] - Only .jpg images are allowed';
 
@@ -17,3 +25,6 @@ export const LOGIN_ERR = '[InstagramPublisher] - Invalid credentials';
 
 export const LOGIN_ERR_COOKIES =
   '[InstagramPublisher] - No coookies found after login';
+
+export const CAPTION_TOO_LONG_ERR =
+  '[InstagramPublisher] - Caption should not exceed 2200 characters';
