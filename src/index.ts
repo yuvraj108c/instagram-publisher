@@ -5,16 +5,18 @@ import {
   IMAGES_NOT_JPG_ERR,
   IMAGES_WRONG_ASPECT_RATIO_ERR,
   LOGIN_ERR,
+  LOGIN_ERR_COOKIES,
   MAX_10_IMAGES_ERR,
   MIN_2_IMAGES_ERR,
 } from './errors';
 import { ICookie, Image, Login, LoginRes } from './types';
 
+const ffprobe = require('ffprobe');
+const ffprobeStatic = require('ffprobe-static');
 const request = require('request-promise-native');
 const useragentFromSeed = require('useragent-from-seed');
 const { Cookie } = require('tough-cookie');
 const sizeOf = require('image-size');
-const isUrl = require('is-url');
 
 const BASE_URL: string = 'https://i.instagram.com';
 const COOKIES_FILE_PATH: string = 'cookies.json';
@@ -22,6 +24,9 @@ const COOKIES_FILE_PATH: string = 'cookies.json';
 class InstagramPublisher {
   _request: RequestPromiseAPI = request;
   _loginData: Login;
+  _cookies: string;
+  _useragent: string;
+  _csrftoken: string;
 
   constructor({ email, password }: Login) {
     this._loginData = { email, password };
@@ -35,6 +40,8 @@ class InstagramPublisher {
   _setHeaders() {
     this._request = request;
     const userAgent = useragentFromSeed(this._loginData.email);
+    this._useragent = userAgent;
+
     const requestOptions: OptionsWithUri = {
       baseUrl: BASE_URL,
       uri: '',
@@ -55,10 +62,10 @@ class InstagramPublisher {
 
       const csrftoken: String = cookies.filter(c => c.key === 'csrftoken')[0]
         .value;
+      this._csrftoken = csrftoken.toString();
       requestOptions.headers['X-CSRFToken'] = csrftoken;
-      requestOptions.headers.Cookie = cookies
-        .map(c => `${c.key}=${c.value}`)
-        .join(';');
+      this._cookies = cookies.map(c => `${c.key}=${c.value}`).join(';');
+      requestOptions.headers.Cookie = this._cookies;
     }
     this._request = request.defaults(requestOptions);
   }
@@ -139,15 +146,7 @@ class InstagramPublisher {
     // Warning! don't change anything bellow.
     const uploadId = Date.now();
 
-    let file;
-
-    // Needed to new method, if image is from url.
-    if (isUrl(photo)) {
-      // Enconding: null is required, only way a Buffer is returned
-      file = await this._request.get({ url: photo, encoding: null });
-    } else {
-      file = await fs.readFileSync(photo);
-    }
+    const file = await fs.readFileSync(photo);
 
     const ruploadParams = {
       media_type: 1,
@@ -232,9 +231,7 @@ class InstagramPublisher {
     });
 
     if (!res.headers['set-cookie']) {
-      throw new Error(
-        '[InstagramPublisher/Login] - No cookies found after login'
-      );
+      throw new Error(LOGIN_ERR_COOKIES);
     }
     const cookies = res.headers['set-cookie'];
     const loginRes: LoginRes = res.body;
@@ -285,6 +282,170 @@ class InstagramPublisher {
     });
 
     return uploadResponse;
+  }
+
+  async sleep(milliseconds) {
+    await new Promise(resolve => setTimeout(resolve, milliseconds));
+  }
+
+  async createReel({
+    video_path,
+    thumbnail_path,
+    caption,
+  }: {
+    video_path: string;
+    thumbnail_path: string;
+    caption: string;
+  }) {
+    if (this._validateCookies()) {
+      try {
+        const timestamp = Date.now();
+        const request_1_headers = {
+          'access-control-request-method': 'GET',
+          'access-control-request-headers': 'x-asbd-id,x-ig-app-id',
+          origin: 'https://www.instagram.com',
+        };
+        await this._request({
+          uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
+          method: 'OPTIONS',
+          headers: request_1_headers,
+        });
+
+        await this._request({
+          uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
+          method: 'GET',
+        });
+
+        // Retrieve video data
+        const video_info = await ffprobe(video_path, {
+          path: ffprobeStatic.path,
+        });
+        const { duration, width, height } = video_info['streams'].filter(
+          (i: any) => i.codec_type === 'video'
+        )[0];
+
+        const video_file = fs.readFileSync(video_path);
+
+        const request_3_headers = {
+          'x-instagram-rupload-params': JSON.stringify({
+            'client-passthrough': '1',
+            is_igtv_video: true,
+            is_sidecar: '0',
+            is_unified_video: '1',
+            media_type: 2,
+            for_album: false,
+            video_format: '',
+            upload_id: timestamp,
+            upload_media_duration_ms:
+              Number(Number(duration).toFixed(3)) * 1000,
+            upload_media_height: height,
+            upload_media_width: width,
+            video_transform: null,
+          }),
+          'x-entity-name': `fb_uploader_${timestamp}`,
+          offset: 0,
+          origin: 'https://www.instagram.com',
+          'x-entity-length': video_file.byteLength,
+          'Content-Length': video_file.byteLength,
+        };
+
+        // upload video file
+        await this._request({
+          uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
+          headers: request_3_headers,
+          method: 'POST',
+          json: false,
+          body: video_file,
+        });
+
+        const request_4_headers = {
+          'access-control-request-method': 'POST',
+          'access-control-request-headers':
+            'content-type,offset,x-asbd-id,x-entity-length,x-entity-name,x-entity-type,x-ig-app-id,x-instagram-ajax,x-instagram-rupload-params',
+          origin: 'https://www.instagram.com',
+        };
+
+        await this._request({
+          uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
+          method: 'OPTIONS',
+          headers: request_4_headers,
+        });
+
+        await this.sleep(500);
+        await this._publishThumbnail(timestamp, thumbnail_path, height, width);
+
+        await this.sleep(5000);
+        await this._publishVideoReel({ caption, upload_id: timestamp });
+
+        console.info(`[InstagramPublisher] - Video reel created`);
+      } catch (error) {
+        throw new Error(
+          `[InstagramPublisher] - Failed to create video reel - ${error}`
+        );
+      }
+    } else {
+      await this._login();
+      await this._setHeaders();
+      await this.createReel({ video_path, thumbnail_path, caption });
+    }
+  }
+
+  async _publishVideoReel({
+    caption,
+    upload_id,
+  }: {
+    caption: string;
+    upload_id: number;
+  }) {
+    const options = {
+      method: 'POST',
+      url: 'https://www.instagram.com/igtv/configure_to_igtv/',
+      headers: {
+        'User-Agent': this._useragent,
+        Cookie: this._cookies,
+        'X-CSRFToken': this._csrftoken,
+        origin: 'https://www.instagram.com',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Referer: 'https://www.instagram.com/',
+        'x-requested-with': 'XMLHttpRequest',
+      },
+      form: {
+        source_type: 'library',
+        caption,
+        upload_id,
+        disable_comments: '0',
+        like_and_view_counts_disabled: '0',
+        igtv_share_preview_to_feed: '1',
+        is_unified_video: '1',
+        video_subtitles_enabled: '0',
+      },
+    };
+    request(options, function(error, response) {
+      if (error) throw new Error(error);
+      console.log(response.body);
+    });
+  }
+
+  async _publishThumbnail(upload_id, image_path, video_height, video_width) {
+    const image_file = fs.readFileSync(image_path);
+    const options = {
+      method: 'POST',
+      url: `${BASE_URL}/rupload_igphoto/fb_uploader_${upload_id}`,
+      headers: {
+        'User-Agent': this._useragent,
+        Cookie: this._cookies,
+        origin: 'https://www.instagram.com',
+        'Content-Type': 'image/jpeg',
+        'Content-Length': image_file.byteLength,
+        'x-instagram-rupload-params': `{"media_type":2,"upload_id":"${upload_id}","upload_media_height":${video_height},"upload_media_width":${video_width}}`,
+        'x-entity-length': image_file.byteLength,
+        'x-entity-type': 'image/jpeg',
+        'x-entity-name': `fb_uploader_${upload_id}`,
+        offset: 0,
+      },
+      body: image_file,
+    };
+    await request(options);
   }
 }
 

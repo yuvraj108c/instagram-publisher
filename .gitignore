@@ -3,3 +3,6 @@
 node_modules
 dist
 cookies.json
+*.mp4
+*.jpg
+test.js

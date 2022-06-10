@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="https://www.npmjs.com/package/instagram-publisher"><img alt="NPM version" src="https://badge.fury.io/js/instagram-publisher.svg"></a>
+</p>
+
 # Instagram Publisher
 
 - This package allows you to create Instagram Slideshows via NodeJS.

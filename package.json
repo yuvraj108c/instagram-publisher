@@ -56,7 +56,6 @@
     ],
     "devDependencies": {
         "@size-limit/preset-small-lib": "^7.0.8",
-        "@types/is-url": "^1.2.30",
         "@types/request-promise-native": "^1.0.18",
         "@types/tough-cookie": "^4.0.2",
         "husky": "^7.0.4",
@@ -67,8 +66,9 @@
         "typescript": "^4.6.4"
     },
     "dependencies": {
+        "ffprobe": "^1.1.2",
+        "ffprobe-static": "^3.0.0",
         "image-size": "^1.0.1",
-        "is-url": "^1.2.4",
         "request-promise-native": "^1.0.9",
         "tough-cookie": "^4.0.0",
         "useragent-from-seed": "^1.0.1"
