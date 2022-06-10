@@ -1,0 +1,74 @@
+import { createImage, createVideo, FILES_DIR } from './utils';
+
+const InstagramPublisher = require('../src');
+const fs = require('fs');
+const {
+  THUMBNAIL_NOT_FOUND_ERR,
+  VIDEO_NOT_FOUND_ERR,
+  THUMBNAIL_NOT_JPG_ERR,
+} = require('../src/errors');
+const { MAX_CAPTION_SIZE } = require('../src/config');
+
+const IP = new InstagramPublisher({
+  email: '',
+  password: '',
+});
+
+beforeAll(() => {
+  fs.writeFileSync('cookies.json', JSON.stringify([{}]));
+});
+
+afterAll(() => {
+  fs.rmdirSync(FILES_DIR, { recursive: true });
+  fs.unlinkSync('cookies.json', () => {});
+});
+
+test('Ensure thumbnail exists', async () => {
+  const params = {
+    thumbnail_path: './a.jpg',
+    video: createVideo(),
+    caption: 'caption',
+  };
+
+  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
+    THUMBNAIL_NOT_FOUND_ERR
+  );
+});
+
+test('Ensure video exists', async () => {
+  const img_path = await createImage(1000, 1000, `a.jpg`);
+  const params = {
+    thumbnail_path: img_path,
+    video: './video_123.mp4',
+    caption: 'caption',
+  };
+
+  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
+    VIDEO_NOT_FOUND_ERR
+  );
+});
+
+test('Ensure caption does not exceed limit', async () => {
+  const img_path = await createImage(1000, 1000, `a.jpg`);
+
+  const params = {
+    thumbnail_path: img_path,
+    video: createVideo(),
+    caption: new Array(MAX_CAPTION_SIZE).join(','),
+  };
+  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
+    MAX_CAPTION_SIZE
+  );
+});
+
+test('Ensure thumbnail is JPG', async () => {
+  const img_path = await createImage(1000, 1000, `a.png`);
+  const params = {
+    thumbnail_path: img_path,
+    video: createVideo(),
+    caption: 'caption',
+  };
+  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
+    THUMBNAIL_NOT_JPG_ERR
+  );
+});

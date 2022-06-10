@@ -30,6 +30,9 @@
         "size": "size-limit",
         "analyze": "size-limit --why"
     },
+    "jest": {
+        "maxWorkers": 1
+    },
     "husky": {
         "hooks": {
             "pre-commit": "tsdx lint"
