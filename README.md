@@ -4,7 +4,7 @@
 
 # Instagram Publisher
 
-- Create Instagram Slideshows and Reels via NodeJS.
+- Create Instagram Slideshows & Reels via NodeJS.
 - Inspired by [instagram-web-api](https://www.npmjs.com/package/instagram-web-api)
 
 ## Install
