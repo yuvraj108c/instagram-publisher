@@ -1,12 +1,12 @@
 import { OptionsWithUri, RequestPromiseAPI } from 'request-promise-native';
 import fs from 'fs';
 import { ICookie } from './types';
+import { COOKIES_FILE_PATH, validateCookies } from './shared';
 
 const request = require('request-promise-native');
 const useragentFromSeed = require('useragent-from-seed');
 
 const BASE_URL: string = 'https://i.instagram.com';
-const COOKIES_FILE_PATH: string = 'cookies.json';
 
 class HTTP_CLIENT {
   static request: RequestPromiseAPI = request;
@@ -34,7 +34,7 @@ class HTTP_CLIENT {
       },
     };
 
-    if (_validateCookies() && requestOptions.headers !== undefined) {
+    if (validateCookies() && requestOptions.headers !== undefined) {
       const cookies: ICookie[] = JSON.parse(
         fs.readFileSync(COOKIES_FILE_PATH, 'utf-8')
       );
@@ -50,7 +50,4 @@ class HTTP_CLIENT {
   }
 }
 
-function _validateCookies(): Boolean {
-  return fs.existsSync(COOKIES_FILE_PATH);
-}
 export default HTTP_CLIENT;
