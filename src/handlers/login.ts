@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { LOGIN_ERR, LOGIN_ERR_COOKIES } from '../errors';
 import HTTP_CLIENT from '../http';
-import { COOKIES_FILE_PATH } from '../shared';
+import { COOKIES_FILE_PATH } from '../config';
 import { LoginRes } from '../types';
 const { Cookie } = require('tough-cookie');
 

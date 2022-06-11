@@ -1,7 +1,5 @@
 import fs from 'fs';
-
-export const COOKIES_FILE_PATH = 'cookies.json';
-export const BASE_URL = 'https://i.instagram.com';
+import { COOKIES_FILE_PATH } from './config';
 
 export function validateCookies(): Boolean {
   return fs.existsSync(COOKIES_FILE_PATH);

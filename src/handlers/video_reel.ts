@@ -2,6 +2,7 @@ import {
   MAX_CAPTION_LENGTH,
   VALID_VIDEO_EXTENSION,
   VALID_VIDEO_ASPECT_RATIOS,
+  BASE_URL,
 } from '../config';
 import {
   THUMBNAIL_NOT_FOUND_ERR,
@@ -13,7 +14,7 @@ import {
 } from '../errors';
 import { Image } from '../types';
 import fs from 'fs';
-import { BASE_URL, sleep } from '../shared';
+import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
 
 const ffprobe = require('ffprobe');

@@ -1,7 +1,8 @@
 import { OptionsWithUri, RequestPromiseAPI } from 'request-promise-native';
 import fs from 'fs';
 import { ICookie } from './types';
-import { BASE_URL, COOKIES_FILE_PATH, validateCookies } from './shared';
+import { validateCookies } from './shared';
+import { BASE_URL, COOKIES_FILE_PATH } from './config';
 
 const request = require('request-promise-native');
 const useragentFromSeed = require('useragent-from-seed');
