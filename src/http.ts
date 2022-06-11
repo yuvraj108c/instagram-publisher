@@ -1,12 +1,10 @@
 import { OptionsWithUri, RequestPromiseAPI } from 'request-promise-native';
 import fs from 'fs';
 import { ICookie } from './types';
-import { COOKIES_FILE_PATH, validateCookies } from './shared';
+import { BASE_URL, COOKIES_FILE_PATH, validateCookies } from './shared';
 
 const request = require('request-promise-native');
 const useragentFromSeed = require('useragent-from-seed');
-
-const BASE_URL: string = 'https://i.instagram.com';
 
 class HTTP_CLIENT {
   static request: RequestPromiseAPI = request;
