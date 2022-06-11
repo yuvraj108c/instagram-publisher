@@ -26,10 +26,9 @@ afterAll(() => {
 });
 
 test('Ensure atleast 2 images are provided', async () => {
-  const images = ['./a.jpg'];
-
   await expect(
-    async () => await IP.createSlideshow(images, 'caption')
+    async () =>
+      await IP.createImageSlideshow({ images: ['./a.jpg'], caption: 'caption' })
   ).rejects.toThrowError(MIN_2_IMAGES_ERR);
 });
 
@@ -37,15 +36,18 @@ test('Ensure caption does not exceed limit', async () => {
   const long_caption = new Array(MAX_CAPTION_SIZE).join(',');
 
   await expect(
-    async () => await IP.createSlideshow([], long_caption)
+    async () =>
+      await IP.createImageSlideshow({ images: [], caption: long_caption })
   ).rejects.toThrowError(MAX_CAPTION_SIZE);
 });
 
 test('Ensure max 10 images are provided', async () => {
-  const images = new Array(11);
-
   await expect(
-    async () => await IP.createSlideshow(images, 'caption')
+    async () =>
+      await IP.createImageSlideshow({
+        images: new Array(11),
+        caption: 'caption',
+      })
   ).rejects.toThrowError(MAX_10_IMAGES_ERR);
 });
 
@@ -55,7 +57,7 @@ test('Ensure all images exists locally', async () => {
     'https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png',
   ];
   await expect(
-    async () => await IP.createSlideshow(images, 'caption')
+    async () => await IP.createImageSlideshow({ images, caption: 'caption' })
   ).rejects.toThrowError(IMAGES_NOT_FOUND_ERR);
 });
 
@@ -70,7 +72,7 @@ test('Ensure all images are JPG', async () => {
   images.push(`${FILES_DIR}/${3}.png`);
 
   await expect(
-    async () => await IP.createSlideshow(images, 'caption')
+    async () => await IP.createImageSlideshow({ images, caption: 'caption' })
   ).rejects.toThrowError(IMAGES_NOT_JPG_ERR);
 });
 
@@ -85,6 +87,6 @@ test('Ensure all images with aspect ratio 1:1', async () => {
   images.push(`${FILES_DIR}/${3}.jpg`);
 
   await expect(
-    async () => await IP.createSlideshow(images, 'caption')
+    async () => await IP.createImageSlideshow({ images, caption: 'caption' })
   ).rejects.toThrowError(IMAGES_WRONG_ASPECT_RATIO_ERR);
 });

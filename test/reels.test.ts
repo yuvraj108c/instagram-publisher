@@ -26,14 +26,14 @@ afterAll(() => {
 
 test('Ensure thumbnail exists', async () => {
   const params = {
-    thumbnail_path: './a.jpg',
+    thumbnail_path: './adsf.jpg',
     video_path: createVideo('vid.mp4'),
     caption: 'caption',
   };
 
-  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
-    THUMBNAIL_NOT_FOUND_ERR
-  );
+  await expect(
+    async () => await IP.createVideoReel(params)
+  ).rejects.toThrowError(THUMBNAIL_NOT_FOUND_ERR);
 });
 
 test('Ensure video exists', async () => {
@@ -44,9 +44,9 @@ test('Ensure video exists', async () => {
     caption: 'caption',
   };
 
-  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
-    VIDEO_NOT_FOUND_ERR
-  );
+  await expect(
+    async () => await IP.createVideoReel(params)
+  ).rejects.toThrowError(VIDEO_NOT_FOUND_ERR);
 });
 
 test('Ensure video has .mp4 extension', async () => {
@@ -57,9 +57,9 @@ test('Ensure video has .mp4 extension', async () => {
     video_path: createVideo(`vid.mov`),
     caption: 'Caption',
   };
-  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
-    INVALID_VIDEO_FORMAT
-  );
+  await expect(
+    async () => await IP.createVideoReel(params)
+  ).rejects.toThrowError(INVALID_VIDEO_FORMAT);
 });
 
 test('Ensure caption does not exceed limit', async () => {
@@ -70,9 +70,9 @@ test('Ensure caption does not exceed limit', async () => {
     video_path: createVideo(`vid.mp4`),
     caption: new Array(MAX_CAPTION_SIZE).join(','),
   };
-  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
-    MAX_CAPTION_SIZE
-  );
+  await expect(
+    async () => await IP.createVideoReel(params)
+  ).rejects.toThrowError(MAX_CAPTION_SIZE);
 });
 
 test('Ensure thumbnail is JPG', async () => {
@@ -82,7 +82,7 @@ test('Ensure thumbnail is JPG', async () => {
     video_path: createVideo('vid.mp4'),
     caption: 'caption',
   };
-  await expect(async () => await IP.createReel(params)).rejects.toThrowError(
-    THUMBNAIL_NOT_JPG_ERR
-  );
+  await expect(
+    async () => await IP.createVideoReel(params)
+  ).rejects.toThrowError(THUMBNAIL_NOT_JPG_ERR);
 });
