@@ -10,11 +10,13 @@ import {
   INVALID_VIDEO_FORMAT,
   INVALID_VIDEO_ASPECT_RATIO,
 } from '../errors';
-import { Image } from '../types';
+import { Image, PostPublished } from '../types';
 import fs from 'fs';
 import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
 import { validateCaption } from './common/validators';
+import uploadVideo from './common/upload_video';
+import uploadVideoThumbnail from './common/upload_video_thumbnail';
 
 const ffprobe = require('ffprobe');
 const ffprobeStatic = require('ffprobe-static');
@@ -47,85 +49,41 @@ async function createVideoReelHandler({
   }
 
   try {
-    const timestamp = Date.now();
-    const request_1_headers = {
-      'access-control-request-method': 'GET',
-      'access-control-request-headers': 'x-asbd-id,x-ig-app-id',
-      origin: BASE_URL,
-    };
-    await HTTP_CLIENT.request({
-      uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
-      method: 'OPTIONS',
-      headers: request_1_headers,
+    const video_uploaded = await uploadVideo({
+      video_duration: duration,
+      video_height: height,
+      video_width: width,
+      video_path,
     });
 
-    await HTTP_CLIENT.request({
-      uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
-      method: 'GET',
+    await uploadVideoThumbnail({
+      video_height: height,
+      video_width: width,
+      image_path: thumbnail_path,
+      video_upload_id: video_uploaded.upload_id,
     });
 
-    const video_file = fs.readFileSync(video_path);
+    console.info(`[InstagramPublisher] - Processing video..`);
+    await sleep(15000);
 
-    const request_3_headers = {
-      'x-instagram-rupload-params': JSON.stringify({
-        'client-passthrough': '1',
-        is_igtv_video: true,
-        is_sidecar: '0',
-        is_unified_video: '1',
-        media_type: 2,
-        for_album: false,
-        video_format: '',
-        upload_id: timestamp,
-        upload_media_duration_ms: Number(Number(duration).toFixed(3)) * 1000,
-        upload_media_height: height,
-        upload_media_width: width,
-        video_transform: null,
-      }),
-      'x-entity-name': `fb_uploader_${timestamp}`,
-      offset: 0,
-      origin: BASE_URL,
-      'x-entity-length': video_file.byteLength,
-      'Content-Length': video_file.byteLength,
-    };
+    let retry_count = 0;
+    let processed: boolean = false;
 
-    // upload video file
-    await HTTP_CLIENT.request({
-      uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
-      headers: request_3_headers,
-      method: 'POST',
-      json: false,
-      body: video_file,
-    });
+    // Retry every 15 seconds until video is processed
+    while (retry_count < 5 && processed === false) {
+      const uploaded_res = await _publishVideoReel({
+        caption,
+        upload_id: video_uploaded.upload_id,
+      });
 
-    const request_4_headers = {
-      'access-control-request-method': 'POST',
-      'access-control-request-headers':
-        'content-type,offset,x-asbd-id,x-entity-length,x-entity-name,x-entity-type,x-ig-app-id,x-instagram-ajax,x-instagram-rupload-params',
-      origin: BASE_URL,
-    };
+      processed = uploaded_res.status == 'ok';
 
-    await HTTP_CLIENT.request({
-      uri: `/rupload_igvideo/fb_uploader_${timestamp}`,
-      method: 'OPTIONS',
-      headers: request_4_headers,
-    });
+      retry_count++;
+      await sleep(15000);
+    }
 
-    await sleep(500);
-    await _publishThumbnail(timestamp, thumbnail_path, height, width);
-
-    const wait_time = 60; //sec
-    console.info(
-      `[InstagramPublisher] - Waiting for video to process (${wait_time} sec)`
-    );
-    await sleep(wait_time * 1000);
-    const uploaded_res = await _publishVideoReel({
-      caption,
-      upload_id: timestamp,
-    });
-
-    const reel_created: boolean = JSON.parse(uploaded_res).status == 'ok';
-    console.info(`[InstagramPublisher] - Video reel created: ${reel_created}`);
-    return reel_created;
+    console.info(`[InstagramPublisher] - Video reel created: ${processed}`);
+    return processed;
   } catch (error) {
     throw new Error(
       `[InstagramPublisher] - Failed to create video reel - ${error}`
@@ -138,8 +96,8 @@ async function _publishVideoReel({
   upload_id,
 }: {
   caption: string;
-  upload_id: number;
-}) {
+  upload_id: string;
+}): Promise<PostPublished> {
   const options = {
     method: 'POST',
     url: 'https://www.instagram.com/igtv/configure_to_igtv/',
@@ -163,34 +121,7 @@ async function _publishVideoReel({
       video_subtitles_enabled: '0',
     },
   };
-  return await request(options);
-}
-
-async function _publishThumbnail(
-  upload_id: number,
-  image_path: string,
-  video_height: number,
-  video_width: number
-) {
-  const image_file = fs.readFileSync(image_path);
-  const options = {
-    method: 'POST',
-    url: `${BASE_URL}/rupload_igphoto/fb_uploader_${upload_id}`,
-    headers: {
-      'User-Agent': HTTP_CLIENT.useragent,
-      Cookie: HTTP_CLIENT.cookies,
-      origin: BASE_URL,
-      'Content-Type': 'image/jpeg',
-      'Content-Length': image_file.byteLength,
-      'x-instagram-rupload-params': `{"media_type":2,"upload_id":"${upload_id}","upload_media_height":${video_height},"upload_media_width":${video_width}}`,
-      'x-entity-length': image_file.byteLength,
-      'x-entity-type': 'image/jpeg',
-      'x-entity-name': `fb_uploader_${upload_id}`,
-      offset: 0,
-    },
-    body: image_file,
-  };
-  await request(options);
+  return JSON.parse(await request(options));
 }
 
 function _validateImage(image: string) {
