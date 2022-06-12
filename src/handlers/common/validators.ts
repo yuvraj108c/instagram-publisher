@@ -1,11 +1,14 @@
-import { MAX_CAPTION_LENGTH } from '../../config';
+import { MAX_CAPTION_LENGTH, VALID_VIDEO_EXTENSION } from '../../config';
 import {
   CAPTION_TOO_LONG_ERR,
   IMAGES_NOT_FOUND_ERR,
   IMAGES_NOT_JPG_ERR,
   IMAGES_WRONG_ASPECT_RATIO_ERR,
+  INVALID_VIDEO_FORMAT,
+  VIDEO_NOT_FOUND_ERR,
 } from '../../errors';
 import { Image } from '../../types';
+import fs from 'fs';
 const sizeOf = require('image-size');
 
 export function validateCaption(caption: string) {
@@ -32,5 +35,21 @@ export function validateImageAspectRatio(image: Image) {
 export function validateImageJPG(image: Image) {
   if (image.type !== 'jpg') {
     throw new Error(IMAGES_NOT_JPG_ERR);
+  }
+}
+
+export function validateVideoExists(video_path: string) {
+  if (!fs.existsSync(video_path)) {
+    throw new Error(VIDEO_NOT_FOUND_ERR);
+  }
+}
+
+export function validateVideoMp4(video_path: string) {
+  const video_extension: any = video_path.split('.')[
+    video_path.split('.').length - 1
+  ];
+
+  if (!VALID_VIDEO_EXTENSION.find(e => e === video_extension)) {
+    throw new Error(INVALID_VIDEO_FORMAT);
   }
 }

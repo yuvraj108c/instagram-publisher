@@ -1,20 +1,15 @@
-import {
-  VALID_VIDEO_EXTENSION,
-  VALID_VIDEO_ASPECT_RATIOS,
-  BASE_URL,
-} from '../config';
-import {
-  THUMBNAIL_NOT_FOUND_ERR,
-  THUMBNAIL_NOT_JPG_ERR,
-  VIDEO_NOT_FOUND_ERR,
-  INVALID_VIDEO_FORMAT,
-  INVALID_VIDEO_ASPECT_RATIO,
-} from '../errors';
-import { Image, PostPublished } from '../types';
-import fs from 'fs';
+import { VALID_VIDEO_ASPECT_RATIOS, BASE_URL } from '../config';
+import { INVALID_VIDEO_ASPECT_RATIO } from '../errors';
+import { PostPublished } from '../types';
 import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
-import { validateCaption } from './common/validators';
+import {
+  validateCaption,
+  validateImageExists,
+  validateImageJPG,
+  validateVideoExists,
+  validateVideoMp4,
+} from './common/validators';
 import uploadVideo from './common/upload_video';
 import uploadVideoThumbnail from './common/upload_video_thumbnail';
 
@@ -33,8 +28,12 @@ async function createSingleVideoHandler({
   caption: string;
 }): Promise<boolean> {
   validateCaption(caption);
-  _validateImage(thumbnail_path);
-  _validateVideo(video_path);
+
+  validateImageExists(thumbnail_path);
+  validateImageJPG(sizeOf(thumbnail_path));
+
+  validateVideoExists(video_path);
+  validateVideoMp4(video_path);
 
   // Retrieve video data
   const video_info = await ffprobe(video_path, {
@@ -122,39 +121,6 @@ async function _publishVideoReel({
     },
   };
   return JSON.parse(await request(options));
-}
-
-function _validateImage(image: string) {
-  // check if images exists
-  let imageSize: Image;
-  try {
-    imageSize = sizeOf(image);
-  } catch (error) {
-    throw new Error(THUMBNAIL_NOT_FOUND_ERR);
-  }
-
-  // check if jpg
-  const imageIsJPG: Boolean = imageSize.type === 'jpg';
-
-  if (!imageIsJPG) {
-    throw new Error(THUMBNAIL_NOT_JPG_ERR);
-  }
-}
-
-function _validateVideo(video_path: string) {
-  // check if video exists
-  if (!fs.existsSync(video_path)) {
-    throw new Error(VIDEO_NOT_FOUND_ERR);
-  }
-
-  // Validate video extension
-  const video_extension: any = video_path.split('.')[
-    video_path.split('.').length - 1
-  ];
-
-  if (!VALID_VIDEO_EXTENSION.find(e => e === video_extension)) {
-    throw new Error(INVALID_VIDEO_FORMAT);
-  }
 }
 
 export default createSingleVideoHandler;
