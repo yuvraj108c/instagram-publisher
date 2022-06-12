@@ -30,6 +30,7 @@ class HTTP_CLIENT {
         'X-Instagram-AJAX': 1,
         'X-Requested-With': 'XMLHttpRequest',
         Referer: BASE_URL,
+        origin: BASE_URL,
       },
     };
 

@@ -1,5 +1,4 @@
 import {
-  MAX_CAPTION_LENGTH,
   VALID_VIDEO_EXTENSION,
   VALID_VIDEO_ASPECT_RATIOS,
   BASE_URL,
@@ -8,7 +7,6 @@ import {
   THUMBNAIL_NOT_FOUND_ERR,
   THUMBNAIL_NOT_JPG_ERR,
   VIDEO_NOT_FOUND_ERR,
-  CAPTION_TOO_LONG_ERR,
   INVALID_VIDEO_FORMAT,
   INVALID_VIDEO_ASPECT_RATIO,
 } from '../errors';
@@ -16,6 +14,7 @@ import { Image } from '../types';
 import fs from 'fs';
 import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
+import { validateCaption } from './common/validators';
 
 const ffprobe = require('ffprobe');
 const ffprobeStatic = require('ffprobe-static');
@@ -31,7 +30,7 @@ async function createVideoReelHandler({
   thumbnail_path: string;
   caption: string;
 }): Promise<boolean> {
-  _validateCaption(caption);
+  validateCaption(caption);
   _validateImage(thumbnail_path);
   _validateVideo(video_path);
 
@@ -192,12 +191,6 @@ async function _publishThumbnail(
     body: image_file,
   };
   await request(options);
-}
-
-function _validateCaption(caption: string) {
-  if (caption.length > MAX_CAPTION_LENGTH) {
-    throw new Error(CAPTION_TOO_LONG_ERR);
-  }
 }
 
 function _validateImage(image: string) {

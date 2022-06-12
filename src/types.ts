@@ -1,8 +1,3 @@
-export interface Login {
-  email: string;
-  password: string;
-}
-
 export interface LoginRes {
   user: any;
   authenticated: Boolean;
@@ -18,4 +13,13 @@ export interface Image {
   type: string;
   width: number;
   height: number;
+}
+
+export interface MediaUploadRes {
+  status: string;
+  upload_id: string;
+}
+
+export interface PostPublished {
+  status: string;
 }
