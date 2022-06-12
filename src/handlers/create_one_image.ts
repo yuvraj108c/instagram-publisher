@@ -1,6 +1,7 @@
 import { Image, PostPublished } from '../types';
 import {
   validateCaption,
+  validateImageAspectRatio,
   validateImageExists,
   validateImageJPG,
 } from './common/validators';
@@ -22,7 +23,7 @@ async function createSingleImageHandler({
 
   const image: Image = sizeOf(image_path);
   validateImageJPG(image);
-  validateImageJPG(image);
+  validateImageAspectRatio(image);
 
   const request_1_headers = {
     'access-control-request-method': 'POST',

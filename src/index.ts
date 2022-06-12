@@ -1,6 +1,6 @@
 import createImageSlideshowHandler from './handlers/create_image_slideshow';
 import login from './handlers/login';
-import createVideoReelHandler from './handlers/video_reel';
+import createVideoReelHandler from './handlers/create_one_video_reel';
 import HTTP_CLIENT from './http';
 import { validateCookies } from './shared';
 import createSingleImageHandler from './handlers/create_one_image';

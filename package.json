@@ -31,7 +31,8 @@
         "analyze": "size-limit --why"
     },
     "jest": {
-        "maxWorkers": 1
+        "maxWorkers": 1,
+        "testTimeout": 30000
     },
     "husky": {
         "hooks": {

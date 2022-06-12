@@ -27,3 +27,9 @@ export function createVideo(f: string): string {
   fs.writeFileSync(path, '');
   return path;
 }
+
+export function getRandomString(): string {
+  return Math.random()
+    .toString(36)
+    .slice(2, 7);
+}
