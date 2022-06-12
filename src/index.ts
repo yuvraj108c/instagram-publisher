@@ -1,6 +1,6 @@
 import createImageSlideshowHandler from './handlers/create_image_slideshow';
 import login from './handlers/login';
-import createVideoReelHandler from './handlers/create_one_video_reel';
+import createSingleVideoHandler from './handlers/create_one_video_reel';
 import HTTP_CLIENT from './http';
 import { validateCookies } from './shared';
 import createSingleImageHandler from './handlers/create_one_image';
@@ -54,7 +54,7 @@ class InstagramPublisher {
     }
   }
 
-  async createVideoReel({
+  async createSingleVideo({
     video_path,
     thumbnail_path,
     caption,
@@ -64,7 +64,7 @@ class InstagramPublisher {
     caption: string;
   }): Promise<boolean> {
     if (validateCookies()) {
-      return await createVideoReelHandler({
+      return await createSingleVideoHandler({
         video_path,
         thumbnail_path,
         caption,
@@ -73,7 +73,7 @@ class InstagramPublisher {
       await login({ email: this._email, password: this._password });
       HTTP_CLIENT.setHeaders();
 
-      return await createVideoReelHandler({
+      return await createSingleVideoHandler({
         video_path,
         thumbnail_path,
         caption,

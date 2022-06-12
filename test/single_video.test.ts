@@ -32,7 +32,7 @@ test('Ensure thumbnail exists', async () => {
   };
 
   await expect(
-    async () => await IP.createVideoReel(params)
+    async () => await IP.createSingleVideoHandler(params)
   ).rejects.toThrowError(THUMBNAIL_NOT_FOUND_ERR);
 });
 
@@ -45,7 +45,7 @@ test('Ensure video exists', async () => {
   };
 
   await expect(
-    async () => await IP.createVideoReel(params)
+    async () => await IP.createSingleVideoHandler(params)
   ).rejects.toThrowError(VIDEO_NOT_FOUND_ERR);
 });
 
@@ -58,7 +58,7 @@ test('Ensure video has .mp4 extension', async () => {
     caption: 'Caption',
   };
   await expect(
-    async () => await IP.createVideoReel(params)
+    async () => await IP.createSingleVideoHandler(params)
   ).rejects.toThrowError(INVALID_VIDEO_FORMAT);
 });
 
@@ -71,7 +71,7 @@ test('Ensure caption does not exceed limit', async () => {
     caption: new Array(MAX_CAPTION_SIZE).join(','),
   };
   await expect(
-    async () => await IP.createVideoReel(params)
+    async () => await IP.createSingleVideoHandler(params)
   ).rejects.toThrowError(MAX_CAPTION_SIZE);
 });
 
@@ -83,6 +83,6 @@ test('Ensure thumbnail is JPG', async () => {
     caption: 'caption',
   };
   await expect(
-    async () => await IP.createVideoReel(params)
+    async () => await IP.createSingleVideoHandler(params)
   ).rejects.toThrowError(THUMBNAIL_NOT_JPG_ERR);
 });

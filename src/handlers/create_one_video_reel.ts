@@ -23,7 +23,7 @@ const ffprobeStatic = require('ffprobe-static');
 const request = require('request-promise-native');
 const sizeOf = require('image-size');
 
-async function createVideoReelHandler({
+async function createSingleVideoHandler({
   video_path,
   thumbnail_path,
   caption,
@@ -157,4 +157,4 @@ function _validateVideo(video_path: string) {
   }
 }
 
-export default createVideoReelHandler;
+export default createSingleVideoHandler;
