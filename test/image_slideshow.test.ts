@@ -1,6 +1,6 @@
 import { createImage, FILES_DIR } from './utils';
-import InstagramPublisher from '../src';
-
+// import InstagramPublisher from '../src';
+const InstagramPublisher = require('../src');
 const fs = require('fs');
 const {
   MIN_2_IMAGES_ERR,

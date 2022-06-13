@@ -85,3 +85,4 @@ class InstagramPublisher {
 }
 
 export default InstagramPublisher;
+module.exports = InstagramPublisher;
