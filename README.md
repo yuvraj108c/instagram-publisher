@@ -3,8 +3,8 @@
 
 # Instagram Publisher
 
-- Publish Instagram Images, Image Slideshows & Video Reels via NodeJS.
-- Inspired by [instagram-web-api](https://www.npmjs.com/package/instagram-web-api)
+- Publish Instagram Images, Slideshows & Video Reels via NodeJS.
+- Supports cookies caching
 
 ## Install
 
@@ -12,18 +12,24 @@
 npm install instagram-publisher
 ```
 
-## Authentication
+## Import
 
 ```js
-import InstagramPublisher from 'instagram-publisher';
+import InstagramPublisher from 'instagram-publisher'; // ES module
 
+const InstagramPublisher = require('instagram-publisher'); // commonJS
+```
+
+## Authentication 🔒
+
+```js
 const client = new InstagramPublisher({
   email: 'youremail@gmail.com',
   password: '12345',
 });
 ```
 
-## Create Image
+## Create Image 🖼️
 
 ```js
 const image_data = {
@@ -33,7 +39,7 @@ const image_data = {
 const created = await client.createSingleImage(image_data);
 ```
 
-## Create Image Slideshow
+## Create Image Slideshow 🖼️🖼️🖼️
 
 ```js
 const slideshow_data = {
@@ -43,7 +49,7 @@ const slideshow_data = {
 const created = await client.createImageSlideshow(slideshow_data);
 ```
 
-## Create Video Reel
+## Create Video Reel 📷
 
 ```js
 const video_data = {
@@ -55,7 +61,7 @@ const video_data = {
 const created = await client.createSingleVideo(video_data);
 ```
 
-## Important Notes
+## Important Notes ⚠️
 
 - Maximum images per slideshow: `10`
 - Minimum images per slideshow: `2`
@@ -68,6 +74,10 @@ const created = await client.createSingleVideo(video_data);
 - All methods return a `boolean` value
 - Cookies are cached under `cookies.json`
 - Videos take some time to be published (< 60 seconds)
+
+## Inspiration
+
+- [instagram-web-api](https://www.npmjs.com/package/instagram-web-api)
 
 ## License
 
