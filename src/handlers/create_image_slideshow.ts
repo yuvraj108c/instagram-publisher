@@ -90,11 +90,11 @@ function _validateImages(images: string[]) {
     throw new Error(MAX_10_IMAGES_ERR);
   }
 
-  images.map(validateImageExists);
+  images.map(img => validateImageExists(img));
 
   const _images: Image[] = images.map(sizeOf);
 
-  _images.map(validateImageJPG);
+  _images.map(img => validateImageJPG(img));
   _images.map(validateImageAspectRatio);
 }
 

@@ -5,6 +5,8 @@ import {
   IMAGES_NOT_JPG_ERR,
   IMAGES_WRONG_ASPECT_RATIO_ERR,
   INVALID_VIDEO_FORMAT,
+  THUMBNAIL_NOT_FOUND_ERR,
+  THUMBNAIL_NOT_JPG_ERR,
   VIDEO_NOT_FOUND_ERR,
 } from '../../errors';
 import { Image } from '../../types';
@@ -17,11 +19,16 @@ export function validateCaption(caption: string) {
   }
 }
 
-export function validateImageExists(image_path: string) {
+export function validateImageExists(
+  image_path: string,
+  isThumbnail: boolean = false
+) {
   try {
     sizeOf(image_path);
   } catch (error) {
-    throw new Error(IMAGES_NOT_FOUND_ERR);
+    throw new Error(
+      isThumbnail ? THUMBNAIL_NOT_FOUND_ERR : IMAGES_NOT_FOUND_ERR
+    );
   }
 }
 
@@ -31,9 +38,9 @@ export function validateImageAspectRatio(image: Image) {
   }
 }
 
-export function validateImageJPG(image: Image) {
+export function validateImageJPG(image: Image, isThumbnail: boolean = false) {
   if (image.type !== 'jpg') {
-    throw new Error(IMAGES_NOT_JPG_ERR);
+    throw new Error(isThumbnail ? THUMBNAIL_NOT_JPG_ERR : IMAGES_NOT_JPG_ERR);
   }
 }
 

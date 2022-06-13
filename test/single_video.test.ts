@@ -1,6 +1,6 @@
 import { createImage, createVideo, FILES_DIR } from './utils';
+import InstagramPublisher from '../src';
 
-const InstagramPublisher = require('../src');
 const fs = require('fs');
 const {
   THUMBNAIL_NOT_FOUND_ERR,

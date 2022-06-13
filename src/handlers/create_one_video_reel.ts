@@ -29,8 +29,8 @@ async function createSingleVideoHandler({
 }): Promise<boolean> {
   validateCaption(caption);
 
-  validateImageExists(thumbnail_path);
-  validateImageJPG(sizeOf(thumbnail_path));
+  validateImageExists(thumbnail_path, true);
+  validateImageJPG(sizeOf(thumbnail_path), true);
 
   validateVideoExists(video_path);
   validateVideoMp4(video_path);

@@ -1,6 +1,6 @@
 import { createImage, FILES_DIR, getRandomString } from './utils';
+import InstagramPublisher from '../src';
 
-const InstagramPublisher = require('../src');
 const fs = require('fs');
 const {
   IMAGES_NOT_FOUND_ERR,
