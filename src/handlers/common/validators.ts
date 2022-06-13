@@ -18,9 +18,8 @@ export function validateCaption(caption: string) {
 }
 
 export function validateImageExists(image_path: string) {
-  let image: Image;
   try {
-    image = sizeOf(image_path);
+    sizeOf(image_path);
   } catch (error) {
     throw new Error(IMAGES_NOT_FOUND_ERR);
   }

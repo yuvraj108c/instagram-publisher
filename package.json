@@ -1,10 +1,10 @@
 {
-    "version": "1.0.1",
+    "version": "2.0.0",
     "license": "MIT",
     "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
+    "types": "dist/index.d.ts",
     "repository": "yuvraj108c/instagram-publisher",
-    "description": "Publish Instagram Slideshows & Reels in nodeJS",
+    "description": "Publish Instagram Images, Image Slideshows & Video Reels via NodeJS",
     "keywords": [
         "instagram",
         "slideshow",
@@ -12,7 +12,10 @@
         "api",
         "web",
         "photos",
-        "jpg"
+        "videos",
+        "reels",
+        "jpg",
+        "mp4"
     ],
     "files": [
         "dist",

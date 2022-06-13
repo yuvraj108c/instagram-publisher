@@ -6,7 +6,9 @@ import { validateCookies } from './shared';
 import createSingleImageHandler from './handlers/create_one_image';
 
 class InstagramPublisher {
+  /** @internal */
   _email: string = '';
+  /** @internal */
   _password: string = '';
 
   constructor({ email, password }: { email: string; password: string }) {
@@ -82,4 +84,4 @@ class InstagramPublisher {
   }
 }
 
-module.exports = InstagramPublisher;
+export default InstagramPublisher;

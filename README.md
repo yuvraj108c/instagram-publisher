@@ -1,10 +1,9 @@
-<p align="center">
-  <a href="https://www.npmjs.com/package/instagram-publisher"><img alt="NPM version" src="https://badge.fury.io/js/instagram-publisher.svg"></a>
-</p>
+[![NPM Version](http://img.shields.io/npm/v/instagram-publisher.svg?style=flat)](https://www.npmjs.org/package/Instagram-publisher)
+[![NPM Downloads](https://img.shields.io/npm/dm/instagram-publisher.svg?style=flat)](https://npmcharts.com/compare/instagram-publisher?minimal=true)
 
 # Instagram Publisher
 
-- Create Instagram Slideshows & Reels via NodeJS.
+- Publish Instagram Images, Image Slideshows & Video Reels via NodeJS.
 - Inspired by [instagram-web-api](https://www.npmjs.com/package/instagram-web-api)
 
 ## Install
@@ -16,47 +15,59 @@ npm install instagram-publisher
 ## Authentication
 
 ```js
-const InstagramPublisher = require('instagram-publisher');
+import InstagramPublisher from 'instagram-publisher';
 
 const client = new InstagramPublisher({
-  email: 'email@gmail.com',
+  email: 'youremail@gmail.com',
   password: '12345',
 });
 ```
 
-## Create Slideshow
+## Create Image
 
 ```js
-const images = ['./cat.jpg', './dog.jpg']; // only local .jpg files
-const caption = 'Slideshow caption';
+const image_data = {
+  image_path: './a.jpg',
+  caption: 'Image caption',
+};
+const created = await client.createSingleImage(image_data);
+```
 
-const isSuccess = await client.createSlideshow(images, caption);
+## Create Image Slideshow
+
+```js
+const slideshow_data = {
+  images: ['./a.jpg', './b.jpg'],
+  caption: 'Slideshow caption',
+};
+const created = await client.createImageSlideshow(slideshow_data);
 ```
 
 ## Create Video Reel
 
 ```js
-const reel_data = {
-  thumbnail_path: './thumbnail.jpg', // only local .jpg files
+const video_data = {
+  video_path: './video.mp4',
+  thumbnail_path: './thumbnail.jpg',
   caption: 'Reel caption',
-  video_path: './video.mp4', // only local .mp4 files
 };
 
-const isSuccess = await client.createReel(reel_data);
+const created = await client.createSingleVideo(video_data);
 ```
 
 ## Important Notes
 
-- Maximum `10` images are allowed per slideshow
-- Minimum `2` images should be provided per slideshow
-- Only `.jpg` images are supported for slideshow & thumbnails
+- Maximum images per slideshow: `10`
+- Minimum images per slideshow: `2`
+- Supported images format: `.jpg`
 - Supported aspect ratio for slideshow images: `1:1`
-- Supported reels aspect ratio: `1:1`, `9:16`, `16:9`
+- Supported video aspect ratio: `1:1`, `9:16`, `16:9`
 - Supported video formats: `.mp4`
 - Maximum caption length: `2200` characters
-- URL's are not supported
+- URL's are not supported. Use local files only
+- All methods return a `boolean` value
 - Cookies are cached under `cookies.json`
-- Video reels may take some time to be published [Wait time: 60 seconds]
+- Videos take some time to be published (< 60 seconds)
 
 ## License
 
