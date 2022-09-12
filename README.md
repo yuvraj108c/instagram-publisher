@@ -1,5 +1,6 @@
-[![NPM Version](http://img.shields.io/npm/v/instagram-publisher.svg?style=flat)](https://www.npmjs.org/package/Instagram-publisher)
+[![NPM Version](http://img.shields.io/npm/v/instagram-publisher.svg?style=flat)](https://www.npmjs.org/package/instagram-publisher)
 [![NPM Downloads](https://img.shields.io/npm/dm/instagram-publisher.svg?style=flat)](https://npmcharts.com/compare/instagram-publisher?minimal=true)
+[![Issues](https://img.shields.io/github/issues/yuvraj108c/instagram-publisher)](https://github.com/yuvraj108c/instagram-publisher/issues)
 
 # Instagram Publisher
 
@@ -26,10 +27,11 @@ const InstagramPublisher = require('instagram-publisher'); // commonJS
 const client = new InstagramPublisher({
   email: 'youremail@gmail.com',
   password: '12345',
+  verbose: true, // default: false
 });
 ```
 
-## Create Image 🖼️
+## Create Image Post 🖼️
 
 ```js
 const image_data = {
@@ -49,16 +51,28 @@ const slideshow_data = {
 const created = await client.createImageSlideshow(slideshow_data);
 ```
 
-## Create Video Reel 📷
+## Create Video Post 📷
 
 ```js
 const video_data = {
   video_path: './video.mp4',
   thumbnail_path: './thumbnail.jpg',
-  caption: 'Reel caption',
+  caption: 'Video Post caption',
 };
 
 const created = await client.createSingleVideo(video_data);
+```
+
+## Create Reel 📷
+
+```js
+const reel_data = {
+  video_path: './video.mp4',
+  thumbnail_path: './thumbnail.jpg',
+  caption: 'Reel caption',
+};
+
+const created = await client.createReel(reel_data);
 ```
 
 ## Important Notes ⚠️
@@ -74,6 +88,7 @@ const created = await client.createSingleVideo(video_data);
 - All methods return a `boolean` value
 - Cookies are cached under `cookies.json`
 - Videos take some time to be published (< 60 seconds)
+- Enable logging by setting `verbose` flag to true
 
 ## Inspiration
 

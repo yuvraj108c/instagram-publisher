@@ -11,12 +11,12 @@ class InstagramPublisher {
   /** @internal */
   _password: string = '';
   /** @internal */
-  _verbose: boolean = true;
+  _verbose: boolean = false;
 
   constructor({
     email,
     password,
-    verbose = true,
+    verbose = false,
   }: {
     email: string;
     password: string;
