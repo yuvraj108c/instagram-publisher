@@ -76,7 +76,6 @@
         "ffprobe-static": "^3.0.0",
         "image-size": "^1.0.1",
         "request-promise-native": "^1.0.9",
-        "tough-cookie": "^4.0.0",
-        "useragent-from-seed": "^1.0.1"
+        "tough-cookie": "^4.0.0"
     }
 }

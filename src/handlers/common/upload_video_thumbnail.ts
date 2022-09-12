@@ -9,11 +9,13 @@ async function uploadVideoThumbnail({
   video_upload_id,
   video_height,
   video_width,
+  is_reel = false,
 }: {
   image_path: string;
   video_upload_id: string;
   video_width: number;
   video_height: number;
+  is_reel: boolean;
 }): Promise<MediaUploadRes> {
   const request_4_headers = {
     'access-control-request-method': 'POST',
@@ -22,7 +24,9 @@ async function uploadVideoThumbnail({
     origin: BASE_URL,
   };
   await HTTP_CLIENT.request({
-    uri: `/rupload_igphoto/fb_uploader_${video_upload_id}`,
+    uri: is_reel
+      ? `/rupload_igphoto/feed_${video_upload_id}`
+      : `/rupload_igphoto/fb_uploader_${video_upload_id}`,
     method: 'OPTIONS',
     headers: request_4_headers,
   });
@@ -30,7 +34,9 @@ async function uploadVideoThumbnail({
   const image_file = fs.readFileSync(image_path);
   const options = {
     method: 'POST',
-    url: `${BASE_URL}/rupload_igphoto/fb_uploader_${video_upload_id}`,
+    url: is_reel
+      ? `${BASE_URL}/rupload_igphoto/feed_${video_upload_id}`
+      : `${BASE_URL}/rupload_igphoto/fb_uploader_${video_upload_id}`,
     headers: {
       'User-Agent': HTTP_CLIENT.useragent,
       Cookie: HTTP_CLIENT.cookies,
@@ -40,7 +46,9 @@ async function uploadVideoThumbnail({
       'x-instagram-rupload-params': `{"media_type":2,"upload_id":"${video_upload_id}","upload_media_height":${video_height},"upload_media_width":${video_width}}`,
       'x-entity-length': image_file.byteLength,
       'x-entity-type': 'image/jpeg',
-      'x-entity-name': `fb_uploader_${video_upload_id}`,
+      'x-entity-name': is_reel
+        ? `feed_${video_upload_id}`
+        : `fb_uploader_${video_upload_id}`,
       offset: 0,
     },
     body: image_file,

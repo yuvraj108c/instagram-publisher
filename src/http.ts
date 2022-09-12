@@ -5,17 +5,13 @@ import { validateCookies } from './shared';
 import { BASE_URL, COOKIES_FILE_PATH } from './config';
 
 const request = require('request-promise-native');
-const useragentFromSeed = require('useragent-from-seed');
 
 class HTTP_CLIENT {
   static request: RequestPromiseAPI = request;
   static cookies: string = '';
-  static useragent: string = '';
+  static useragent: string =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
   static csrftoken: string = '';
-
-  static setUserAgent(email: string) {
-    HTTP_CLIENT.useragent = useragentFromSeed(email);
-  }
 
   static setHeaders() {
     HTTP_CLIENT.request = request;
