@@ -14,9 +14,11 @@ const sizeOf = require('image-size');
 async function createImageSlideshowHandler({
   images = [],
   caption = '',
+  verbose,
 }: {
   images: string[];
   caption: string;
+  verbose: boolean;
 }) {
   _validateImages(images);
   validateCaption(caption);
@@ -43,9 +45,10 @@ async function createImageSlideshowHandler({
       photosUploaded,
       caption,
     });
-    console.info(
-      `[InstagramPublisher] - Image Slideshow Created: ${createSlideshowResponse.status}`
-    );
+    if (verbose)
+      console.info(
+        `[InstagramPublisher] - Image Slideshow Created: ${createSlideshowResponse.status}`
+      );
     return createSlideshowResponse.status === 'ok';
   }
   return false;

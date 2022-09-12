@@ -10,13 +10,24 @@ class InstagramPublisher {
   _email: string = '';
   /** @internal */
   _password: string = '';
+  /** @internal */
+  _verbose: boolean = true;
 
-  constructor({ email, password }: { email: string; password: string }) {
+  constructor({
+    email,
+    password,
+    verbose = true,
+  }: {
+    email: string;
+    password: string;
+    verbose?: boolean;
+  }) {
     this._email = email;
     this._password = password;
+    this._verbose = verbose;
     HTTP_CLIENT.setHeaders();
 
-    if (validateCookies()) {
+    if (validateCookies() && this._verbose) {
       console.info(`[InstagramPublisher] - Authenticated: true (cached)`);
     }
   }
@@ -29,10 +40,18 @@ class InstagramPublisher {
     caption: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
-      await login({ email: this._email, password: this._password });
+      await login({
+        email: this._email,
+        password: this._password,
+        verbose: this._verbose,
+      });
       HTTP_CLIENT.setHeaders();
     }
-    return await createSingleImageHandler({ image_path, caption });
+    return await createSingleImageHandler({
+      image_path,
+      caption,
+      verbose: this._verbose,
+    });
   }
 
   async createImageSlideshow({
@@ -43,10 +62,18 @@ class InstagramPublisher {
     caption: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
-      await login({ email: this._email, password: this._password });
+      await login({
+        email: this._email,
+        password: this._password,
+        verbose: this._verbose,
+      });
       HTTP_CLIENT.setHeaders();
     }
-    return await createImageSlideshowHandler({ images, caption });
+    return await createImageSlideshowHandler({
+      images,
+      caption,
+      verbose: this._verbose,
+    });
   }
 
   async createSingleVideo({
@@ -59,7 +86,11 @@ class InstagramPublisher {
     caption: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
-      await login({ email: this._email, password: this._password });
+      await login({
+        email: this._email,
+        password: this._password,
+        verbose: this._verbose,
+      });
       HTTP_CLIENT.setHeaders();
     }
 
@@ -68,6 +99,7 @@ class InstagramPublisher {
       thumbnail_path,
       caption,
       is_reel: false,
+      verbose: this._verbose,
     });
   }
 
@@ -81,7 +113,11 @@ class InstagramPublisher {
     caption: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
-      await login({ email: this._email, password: this._password });
+      await login({
+        email: this._email,
+        password: this._password,
+        verbose: this._verbose,
+      });
       HTTP_CLIENT.setHeaders();
     }
 
@@ -90,6 +126,7 @@ class InstagramPublisher {
       thumbnail_path,
       caption,
       is_reel: true,
+      verbose: this._verbose,
     });
   }
 }

@@ -14,9 +14,11 @@ const request = require('request-promise-native');
 async function createSingleImageHandler({
   image_path,
   caption,
+  verbose,
 }: {
   image_path: string;
   caption: string;
+  verbose: boolean;
 }): Promise<boolean> {
   validateCaption(caption);
   validateImageExists(image_path);
@@ -68,9 +70,11 @@ async function createSingleImageHandler({
     })
   );
 
-  console.info(
-    `[InstagramPublisher] - Image Post Created: ${final_res.status}`
-  );
+  if (verbose)
+    console.info(
+      `[InstagramPublisher] - Image Post Created: ${final_res.status}`
+    );
+
   return final_res.status === 'ok';
 }
 

@@ -8,9 +8,11 @@ const { Cookie } = require('tough-cookie');
 async function login({
   email,
   password,
+  verbose,
 }: {
   email: string;
   password: string;
+  verbose: boolean;
 }): Promise<Boolean> {
   // Get CSRFToken from cookie before login
   let value;
@@ -48,9 +50,10 @@ async function login({
     throw new Error(LOGIN_ERR);
   }
 
-  console.info(
-    `[InstagramPublisher] - Authenticated: ${res.body.authenticated}`
-  );
+  if (verbose)
+    console.info(
+      `[InstagramPublisher] - Authenticated: ${res.body.authenticated}`
+    );
 
   // save to cookies.json
   cookies.push('ig_cb=1');

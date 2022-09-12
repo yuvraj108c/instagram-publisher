@@ -23,11 +23,13 @@ async function createSingleVideoHandler({
   thumbnail_path,
   caption,
   is_reel,
+  verbose,
 }: {
   video_path: string;
   thumbnail_path: string;
   caption: string;
   is_reel: boolean;
+  verbose: boolean;
 }): Promise<boolean> {
   validateCaption(caption);
 
@@ -66,7 +68,7 @@ async function createSingleVideoHandler({
       is_reel,
     });
 
-    console.info(`[InstagramPublisher] - Processing video..`);
+    if (verbose) console.info(`[InstagramPublisher] - Processing video..`);
     await sleep(15000);
 
     let retry_count = 0;
@@ -90,16 +92,16 @@ async function createSingleVideoHandler({
       await sleep(15000);
     }
 
-    console.info(
-      is_reel
-        ? `[InstagramPublisher] - Reel created: ${processed}`
-        : `[InstagramPublisher] - Video post created: ${processed}`
-    );
+    if (verbose) {
+      console.info(
+        is_reel
+          ? `[InstagramPublisher] - Reel created: ${processed}`
+          : `[InstagramPublisher] - Video post created: ${processed}`
+      );
+    }
     return processed;
   } catch (error) {
-    throw new Error(
-      `[InstagramPublisher] - Failed to create video post - ${error}`
-    );
+    throw new Error(`[InstagramPublisher] - Failed to create video - ${error}`);
   }
 }
 
