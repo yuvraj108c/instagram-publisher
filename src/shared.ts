@@ -2,11 +2,17 @@ import fs from 'fs';
 import { COOKIES_FILE_PATH } from './config';
 
 export function validateCookies(): Boolean {
-  return fs.existsSync(COOKIES_FILE_PATH);
-}
+  const exists = fs.existsSync(COOKIES_FILE_PATH);
 
-export function getRandomArbitrary(min: number, max: number): Number {
-  return Math.random() * (max - min) + min;
+  // check expiration date
+  if (exists) {
+    const cookies = JSON.parse(fs.readFileSync(COOKIES_FILE_PATH, 'utf8'));
+    const expirationDate = new Date(
+      cookies.find((c: any) => c.key === 'sessionid').expires
+    );
+    return new Date() < expirationDate;
+  }
+  return false;
 }
 
 export async function sleep(milliseconds: number) {
