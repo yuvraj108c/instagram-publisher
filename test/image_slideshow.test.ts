@@ -17,7 +17,15 @@ const IP = new InstagramPublisher({
 });
 
 beforeAll(() => {
-  fs.writeFileSync('cookies.json', JSON.stringify([{}]));
+  fs.writeFileSync(
+    'cookies.json',
+    JSON.stringify([
+      {
+        key: 'sessionid',
+        expires: new Date('2100-09-11T12:56:18.000Z').toISOString(),
+      },
+    ])
+  );
 });
 
 afterAll(() => {
