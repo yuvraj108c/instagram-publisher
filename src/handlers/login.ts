@@ -1,4 +1,4 @@
-import fs from 'fs';
+import * as fs from 'fs';
 import { LOGIN_ERR, LOGIN_ERR_COOKIES } from '../errors';
 import HTTP_CLIENT from '../http';
 import { COOKIES_FILE_PATH } from '../config';
@@ -18,9 +18,9 @@ async function login({
   let value;
   await HTTP_CLIENT.request('/', { resolveWithFullResponse: true }).then(
     res => {
-      const pattern = new RegExp(/(csrf_token":")\w+/);
-      const matches = res.toJSON().body.match(pattern);
-      value = matches[0].substring(13);
+      const pattern = new RegExp(/(csrf_token\\":\\")[\w]+/);
+      const matches = res.body.match(pattern);
+      value = matches[0].substring(15);
     }
   );
 

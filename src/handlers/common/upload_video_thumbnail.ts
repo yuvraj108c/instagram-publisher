@@ -1,6 +1,6 @@
 import { BASE_URL } from '../../config';
 import HTTP_CLIENT from '../../http';
-import fs from 'fs';
+import * as fs from 'fs';
 import { MediaUploadRes } from '../../types';
 const request = require('request-promise-native');
 

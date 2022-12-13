@@ -10,7 +10,7 @@ import {
   VIDEO_NOT_FOUND_ERR,
 } from '../../errors';
 import { Image } from '../../types';
-import fs from 'fs';
+import * as fs from 'fs';
 const sizeOf = require('image-size');
 
 export function validateCaption(caption: string) {

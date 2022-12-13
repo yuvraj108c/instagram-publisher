@@ -1,5 +1,5 @@
 import { OptionsWithUri, RequestPromiseAPI } from 'request-promise-native';
-import fs from 'fs';
+import * as fs from 'fs';
 import { ICookie } from './types';
 import { validateCookies } from './shared';
 import { BASE_URL, COOKIES_FILE_PATH } from './config';

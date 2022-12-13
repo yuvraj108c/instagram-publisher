@@ -1,4 +1,4 @@
-import fs from 'fs';
+import * as fs from 'fs';
 import { COOKIES_FILE_PATH } from './config';
 
 export function validateCookies(): Boolean {

@@ -1,6 +1,6 @@
 import { BASE_URL } from '../../config';
 import HTTP_CLIENT from '../../http';
-import fs from 'fs';
+import * as fs from 'fs';
 import { Image, MediaUploadRes } from '../../types';
 const sizeOf = require('image-size');
 
