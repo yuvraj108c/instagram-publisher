@@ -86,10 +86,12 @@ class InstagramPublisher {
     video_path,
     thumbnail_path,
     caption,
+    location,
   }: {
     video_path: string;
     thumbnail_path: string;
     caption: string;
+    location?: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
       await login({
@@ -105,6 +107,7 @@ class InstagramPublisher {
       thumbnail_path,
       caption,
       is_reel: false,
+      location,
       verbose: this._verbose,
     });
   }

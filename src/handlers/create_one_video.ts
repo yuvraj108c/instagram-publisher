@@ -1,6 +1,6 @@
 import { VALID_VIDEO_ASPECT_RATIOS, BASE_URL } from '../config';
-import { INVALID_VIDEO_ASPECT_RATIO } from '../errors';
-import { PostPublished } from '../types';
+import { INVALID_VIDEO_ASPECT_RATIO, LOCATION_NOT_FOUND } from '../errors';
+import { LocationSearchRes, PostPublished } from '../types';
 import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
 import {
@@ -12,6 +12,7 @@ import {
 } from './common/validators';
 import uploadVideo from './common/upload_video';
 import uploadVideoThumbnail from './common/upload_video_thumbnail';
+import getLocation from './common/get_location';
 
 const ffprobe = require('ffprobe');
 const ffprobeStatic = require('ffprobe-static');
@@ -23,12 +24,14 @@ async function createSingleVideoHandler({
   thumbnail_path,
   caption,
   is_reel,
+  location,
   verbose,
 }: {
   video_path: string;
   thumbnail_path: string;
   caption: string;
   is_reel: boolean;
+  location?: string;
   verbose: boolean;
 }): Promise<boolean> {
   validateCaption(caption);
@@ -84,6 +87,7 @@ async function createSingleVideoHandler({
         : await _publishVideo({
             caption,
             upload_id: video_uploaded.upload_id,
+            location,
           });
 
       processed = uploaded_res.status == 'ok';
@@ -108,10 +112,36 @@ async function createSingleVideoHandler({
 async function _publishVideo({
   caption,
   upload_id,
+  location,
 }: {
   caption: string;
   upload_id: string;
+  location?: string;
 }): Promise<PostPublished> {
+  const formData: any = {
+    source_type: 'library',
+    caption,
+    upload_id,
+    disable_comments: '0',
+    like_and_view_counts_disabled: '0',
+    igtv_share_preview_to_feed: '1',
+    is_unified_video: '1',
+    video_subtitles_enabled: '0',
+  };
+
+  if (location) {
+    try {
+      const locationData: LocationSearchRes = await getLocation(location);
+      formData.location = JSON.stringify({
+        lat: locationData.venues[0].lat,
+        lng: locationData.venues[0].lng,
+        facebook_places_id: locationData.venues[0].external_id,
+      });
+      formData.geotag_enabled = true;
+    } catch (error) {
+      throw new Error(LOCATION_NOT_FOUND);
+    }
+  }
   const options = {
     method: 'POST',
     url: 'https://www.instagram.com/igtv/configure_to_igtv/',
@@ -124,16 +154,7 @@ async function _publishVideo({
       Referer: BASE_URL,
       'x-requested-with': 'XMLHttpRequest',
     },
-    form: {
-      source_type: 'library',
-      caption,
-      upload_id,
-      disable_comments: '0',
-      like_and_view_counts_disabled: '0',
-      igtv_share_preview_to_feed: '1',
-      is_unified_video: '1',
-      video_subtitles_enabled: '0',
-    },
+    form: { ...formData },
   };
   return JSON.parse(await request(options));
 }
