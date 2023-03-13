@@ -60,9 +60,11 @@ class InstagramPublisher {
   async createImageSlideshow({
     images = [],
     caption = '',
+    location,
   }: {
     images: string[];
     caption: string;
+    location?: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
       await login({
@@ -75,6 +77,7 @@ class InstagramPublisher {
     return await createImageSlideshowHandler({
       images,
       caption,
+      location,
       verbose: this._verbose,
     });
   }

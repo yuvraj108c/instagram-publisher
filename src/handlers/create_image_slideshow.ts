@@ -1,7 +1,17 @@
 import { MIN_SLIDESHOW_IMAGES, MAX_SLIDESHOW_IMAGES } from '../config';
-import { MIN_2_IMAGES_ERR, MAX_10_IMAGES_ERR } from '../errors';
+import {
+  MIN_2_IMAGES_ERR,
+  MAX_10_IMAGES_ERR,
+  LOCATION_NOT_FOUND,
+} from '../errors';
 import HTTP_CLIENT from '../http';
-import { Image, MediaUploadRes, PostPublished } from '../types';
+import {
+  Image,
+  LocationSearchRes,
+  MediaUploadRes,
+  PostPublished,
+} from '../types';
+import getLocation from './common/get_location';
 import uploadPhoto from './common/upload_photo';
 import {
   validateCaption,
@@ -14,10 +24,12 @@ const sizeOf = require('image-size');
 async function createImageSlideshowHandler({
   images = [],
   caption = '',
+  location,
   verbose,
 }: {
   images: string[];
   caption: string;
+  location?: string;
   verbose: boolean;
 }) {
   _validateImages(images);
@@ -44,6 +56,7 @@ async function createImageSlideshowHandler({
     const createSlideshowResponse = await _saveSlideshow({
       photosUploaded,
       caption,
+      location,
     });
     if (verbose)
       console.info(
@@ -57,11 +70,13 @@ async function createImageSlideshowHandler({
 async function _saveSlideshow({
   photosUploaded,
   caption,
+  location,
 }: {
   photosUploaded: MediaUploadRes[];
   caption: string;
+  location?: string;
 }): Promise<PostPublished> {
-  const payload = {
+  const payload: any = {
     caption,
     children_metadata: [...photosUploaded],
     client_sidecar_id: Date.now().toString(),
@@ -69,6 +84,20 @@ async function _saveSlideshow({
     like_and_view_counts_disabled: false,
     source_type: 'library',
   };
+
+  if (location) {
+    try {
+      const locationData: LocationSearchRes = await getLocation(location);
+      payload.location = {
+        lat: locationData.venues[0].lat,
+        lng: locationData.venues[0].lng,
+        facebook_places_id: locationData.venues[0].external_id,
+      };
+      payload.geotag_enabled = 'true';
+    } catch (error) {
+      throw new Error(LOCATION_NOT_FOUND);
+    }
+  }
 
   const requestHeaders = {
     'x-asbd-id': '198387',
