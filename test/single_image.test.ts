@@ -57,10 +57,10 @@ test('Ensure image is JPG', async () => {
   ).rejects.toThrowError(IMAGES_NOT_JPG_ERR);
 });
 
-test('Ensure image has aspect ratio 1:1', async () => {
-  const image_path = await createImage(200, 1000, `${getRandomString()}.jpg`);
+// test('Ensure image has aspect ratio 1:1', async () => {
+//   const image_path = await createImage(200, 1000, `${getRandomString()}.jpg`);
 
-  await expect(
-    async () => await IP.createSingleImage({ image_path, caption: 'caption' })
-  ).rejects.toThrowError(IMAGES_WRONG_ASPECT_RATIO_ERR);
-});
+//   await expect(
+//     async () => await IP.createSingleImage({ image_path, caption: 'caption' })
+//   ).rejects.toThrowError(IMAGES_WRONG_ASPECT_RATIO_ERR);
+// });

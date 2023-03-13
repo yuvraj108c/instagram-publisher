@@ -23,3 +23,15 @@ export interface MediaUploadRes {
 export interface PostPublished {
   status: string;
 }
+
+export interface Location {
+  name: string;
+  external_id: number;
+  lat: number;
+  lng: number;
+}
+
+export interface LocationSearchRes {
+  status: string;
+  venues: Location[];
+}

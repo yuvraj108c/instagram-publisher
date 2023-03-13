@@ -33,3 +33,4 @@ export const INVALID_VIDEO_FORMAT =
   '[InstagramPublisher] - Only .mp4 video files are supported';
 
 export const INVALID_VIDEO_ASPECT_RATIO = `[InstagramPublisher] - Only '1:1', '16:9', '9:16' video aspect ratios are supported`;
+export const LOCATION_NOT_FOUND = `[InstagramPublisher] - Location not found`;

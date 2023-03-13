@@ -35,9 +35,11 @@ class InstagramPublisher {
   async createSingleImage({
     image_path,
     caption = '',
+    location,
   }: {
     image_path: string;
     caption: string;
+    location?: string;
   }): Promise<boolean> {
     if (!validateCookies()) {
       await login({
@@ -50,6 +52,7 @@ class InstagramPublisher {
     return await createSingleImageHandler({
       image_path,
       caption,
+      location,
       verbose: this._verbose,
     });
   }
