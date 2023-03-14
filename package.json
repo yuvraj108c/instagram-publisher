@@ -4,7 +4,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "repository": "yuvraj108c/instagram-publisher",
-    "description": "Publish Instagram Images, Image Slideshows & Video Reels via NodeJS",
+    "description": "Publish Instagram Images, Image Slideshows, Video Reels & Stories via NodeJS",
     "keywords": [
         "instagram",
         "slideshow",
