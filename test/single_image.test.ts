@@ -2,11 +2,7 @@ import { createImage, FILES_DIR, getRandomString } from './utils';
 import InstagramPublisher from '../src';
 
 const fs = require('fs');
-const {
-  IMAGES_NOT_FOUND_ERR,
-  IMAGES_NOT_JPG_ERR,
-  IMAGES_WRONG_ASPECT_RATIO_ERR,
-} = require('../src/errors');
+const { IMAGES_NOT_FOUND_ERR, IMAGES_NOT_JPG_ERR } = require('../src/errors');
 const { MAX_CAPTION_SIZE } = require('../src/config');
 
 const IP = new InstagramPublisher({
