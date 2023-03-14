@@ -4,8 +4,10 @@
 
 # Instagram Publisher
 
-- Publish Instagram Images, Slideshows & Video Reels via NodeJS.
-- Supports cookies caching
+- Publish Instagram Images, Slideshows, Video Reels & Stories via NodeJS.
+- Supports Geotagging
+- Supports Cookies Caching
+- No API key required
 
 ## Install
 
@@ -37,6 +39,7 @@ const client = new InstagramPublisher({
 const image_data = {
   image_path: './a.jpg',
   caption: 'Image caption',
+  location: 'Chicago, United States', // optional
 };
 const created = await client.createSingleImage(image_data);
 ```
@@ -47,8 +50,18 @@ const created = await client.createSingleImage(image_data);
 const slideshow_data = {
   images: ['./a.jpg', './b.jpg'],
   caption: 'Slideshow caption',
+  location: 'Chicago, United States', // optional
 };
 const created = await client.createImageSlideshow(slideshow_data);
+```
+
+## Create Image Story 🎨
+
+```js
+const story_data = {
+  image_path: './a.jpg',
+};
+const created = await client.createImageStory(story_data);
 ```
 
 ## Create Video Post 📷
@@ -58,6 +71,7 @@ const video_data = {
   video_path: './video.mp4',
   thumbnail_path: './thumbnail.jpg',
   caption: 'Video Post caption',
+  location: 'Chicago, United States', // optional
 };
 
 const created = await client.createSingleVideo(video_data);
@@ -70,6 +84,7 @@ const reel_data = {
   video_path: './video.mp4',
   thumbnail_path: './thumbnail.jpg',
   caption: 'Reel caption',
+  location: 'Chicago, United States', // optional
 };
 
 const created = await client.createReel(reel_data);
