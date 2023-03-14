@@ -83,6 +83,7 @@ async function createSingleVideoHandler({
         ? await _publishReel({
             caption,
             upload_id: video_uploaded.upload_id,
+            location,
           })
         : await _publishVideo({
             caption,
@@ -162,9 +163,11 @@ async function _publishVideo({
 async function _publishReel({
   caption,
   upload_id,
+  location,
 }: {
   caption: string;
   upload_id: string;
+  location?: string;
 }): Promise<PostPublished> {
   const options_1 = {
     method: 'OPTIONS',
@@ -188,6 +191,36 @@ async function _publishReel({
   };
   await request(options_1);
 
+  const formData: any = {
+    upload_id,
+    caption,
+    retry_timeout: 12,
+    clips_uses_original_audio: 1,
+    uses_original_audio: 1,
+    original_audio: 1,
+    audio: 1,
+    clips_audio: 1,
+    clips_with_audio: 1,
+    with_audio: 1,
+    enable_audio: 1,
+    clips_enable_audio: 1,
+    clips_audio_enable: 1,
+    audio_enable: 1,
+    audio_type: 'original_sounds',
+  };
+  if (location) {
+    try {
+      const locationData: LocationSearchRes = await getLocation(location);
+      formData.location = JSON.stringify({
+        lat: locationData.venues[0].lat,
+        lng: locationData.venues[0].lng,
+        facebook_places_id: locationData.venues[0].external_id,
+      });
+      formData.geotag_enabled = true;
+    } catch (error) {
+      throw new Error(LOCATION_NOT_FOUND);
+    }
+  }
   const options = {
     method: 'POST',
     url: 'https://i.instagram.com/api/v1/media/configure_to_clips/',
@@ -203,23 +236,7 @@ async function _publishReel({
       'x-asbd-id': '198387',
       'x-frame-options': 'SAMEORIGIN',
     },
-    form: {
-      upload_id,
-      caption,
-      retry_timeout: 12,
-      clips_uses_original_audio: 1,
-      uses_original_audio: 1,
-      original_audio: 1,
-      audio: 1,
-      clips_audio: 1,
-      clips_with_audio: 1,
-      with_audio: 1,
-      enable_audio: 1,
-      clips_enable_audio: 1,
-      clips_audio_enable: 1,
-      audio_enable: 1,
-      audio_type: 'original_sounds',
-    },
+    form: { ...formData },
   };
   return JSON.parse(await request(options));
 }
