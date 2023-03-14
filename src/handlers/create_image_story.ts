@@ -2,9 +2,8 @@ import { Image, PostPublished } from '../types';
 import { validateImageExists, validateImageJPG } from './common/validators';
 import HTTP_CLIENT from '../http';
 import uploadPhoto from './common/upload_photo';
-import { BASE_URL } from '../config';
+import createStory from './common/create_story';
 const sizeOf = require('image-size');
-const request = require('request-promise-native');
 
 async function createImageStoryHandler({
   image_path,
@@ -32,29 +31,9 @@ async function createImageStoryHandler({
 
   const upload_img_res = await uploadPhoto(image_path);
 
-  const formData: any = {
-    caption: '',
+  const final_res: PostPublished = await createStory({
     upload_id: upload_img_res.upload_id,
-  };
-
-  const options = {
-    method: 'POST',
-    url: 'https://www.instagram.com/api/v1/web/create/configure_to_story/',
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1 Instagram 231.0.0.18.113',
-      Cookie: HTTP_CLIENT.cookies,
-      'X-CSRFToken': HTTP_CLIENT.csrftoken,
-      origin: BASE_URL,
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Referer: BASE_URL,
-      'x-ig-app-id': '1217981644879628',
-      'x-asbd-id': '198387',
-      'x-frame-options': 'SAMEORIGIN',
-    },
-    form: { ...formData },
-  };
-  const final_res: PostPublished = JSON.parse(await request(options));
+  });
 
   if (verbose)
     console.info(
