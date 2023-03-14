@@ -4,6 +4,7 @@ import createSingleVideoHandler from './handlers/create_one_video';
 import HTTP_CLIENT from './http';
 import { validateCookies } from './shared';
 import createSingleImageHandler from './handlers/create_one_image';
+import createImageStoryHandler from './handlers/create_image_story';
 
 class InstagramPublisher {
   /** @internal */
@@ -138,6 +139,26 @@ class InstagramPublisher {
       caption,
       is_reel: true,
       location,
+      verbose: this._verbose,
+    });
+  }
+
+  async createImageStory({
+    image_path,
+  }: {
+    image_path: string;
+  }): Promise<boolean> {
+    if (!validateCookies()) {
+      await login({
+        email: this._email,
+        password: this._password,
+        verbose: this._verbose,
+      });
+      HTTP_CLIENT.setHeaders();
+    }
+
+    return await createImageStoryHandler({
+      image_path,
       verbose: this._verbose,
     });
   }
