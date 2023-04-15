@@ -54,7 +54,12 @@ async function createSingleVideoHandler({
     'streams'
   ].filter((i: any) => i.codec_type === 'video')[0];
 
-  if (!VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)) {
+  // Display Aspect Ratio is frequently listed as N/A in ffprobe, which manifests
+  // as undefined here.
+  const is_display_aspect_ratio_missing = display_aspect_ratio == null;
+
+  if (!is_display_aspect_ratio_missing &&
+      !VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)) {
     throw new Error(INVALID_VIDEO_ASPECT_RATIO);
   }
 
