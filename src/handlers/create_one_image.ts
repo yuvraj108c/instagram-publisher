@@ -2,8 +2,8 @@ import {
   Image,
   LinkablePostPublished,
   LocationSearchRes,
-  PostPublished }
-from '../types';
+  PostPublished,
+} from '../types';
 import {
   validateCaption,
   validateImageExists,
@@ -100,7 +100,7 @@ async function createSingleImageHandler({
       `[InstagramPublisher] - Image Post Created: ${final_res.status}`
     );
 
-  return {succeeded: final_res.status === 'ok', code: final_res.media.code};
+  return { succeeded: final_res.status === 'ok', code: final_res.media.code };
 }
 
 export default createSingleImageHandler;
