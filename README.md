@@ -41,7 +41,7 @@ const image_data = {
   caption: 'Image caption',
   location: 'Chicago, United States', // optional
 };
-const created = await client.createSingleImage(image_data);
+const post_published = await client.createSingleImage(image_data);
 ```
 
 ## Create Image Slideshow 🖼️🖼️🖼️
@@ -52,7 +52,7 @@ const slideshow_data = {
   caption: 'Slideshow caption',
   location: 'Chicago, United States', // optional
 };
-const created = await client.createImageSlideshow(slideshow_data);
+const post_published = await client.createImageSlideshow(slideshow_data);
 ```
 
 ## Create Image Story 🎨
@@ -61,7 +61,7 @@ const created = await client.createImageSlideshow(slideshow_data);
 const story_data = {
   image_path: './a.jpg',
 };
-const created = await client.createImageStory(story_data);
+const post_published = await client.createImageStory(story_data);
 ```
 
 ## Create Video Post 📷
@@ -74,7 +74,7 @@ const video_data = {
   location: 'Chicago, United States', // optional
 };
 
-const created = await client.createSingleVideo(video_data);
+const post_published = await client.createSingleVideo(video_data);
 ```
 
 ## Create Reel 📷
@@ -87,8 +87,16 @@ const reel_data = {
   location: 'Chicago, United States', // optional
 };
 
-const created = await client.createReel(reel_data);
+const post_published = await client.createReel(reel_data);
 ```
+
+## Getting URL's of posts 🔗
+
+All methods return an object with the published post code: `{ succeeded: true, code: 'CrfNdfjdsfsl' }`. You can generate the URL's as follows:
+
+- Images, Videos & Carousels: https://www.instagram.com/p/ `<code>`
+- Reels: https://www.instagram.com/reel/ `<code>`
+- Image Story: https://www.instagram.com/stories/ `<your_instagram_username>`/ `<code>`
 
 ## Important Notes ⚠️
 
@@ -100,7 +108,6 @@ const created = await client.createReel(reel_data);
 - Supported video formats: `.mp4`
 - Maximum caption length: `2200` characters
 - URL's are not supported. Use local files only
-- All methods return a `boolean` value
 - Cookies are cached under `cookies.json`
 - Videos take some time to be published (< 60 seconds)
 - Enable logging by setting `verbose` flag to true
