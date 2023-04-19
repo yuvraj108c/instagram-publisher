@@ -18,20 +18,19 @@ export interface Image {
 export interface MediaUploadRes {
   status: string;
   upload_id: string;
-}
-
-export interface MediaUploadRes {
   code: string;
+  pk?: string;
 }
 
 export interface PostPublished {
   status: string;
-  media: MediaResultFromIG;
+  media: MediaUploadRes;
 }
 
 export interface LinkablePostPublished {
   succeeded: boolean;
   code: string;
+  pk?: string;
 }
 
 export interface Location {

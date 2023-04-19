@@ -3,7 +3,7 @@ import { INVALID_VIDEO_ASPECT_RATIO, LOCATION_NOT_FOUND } from '../errors';
 import {
   LinkablePostPublished,
   LocationSearchRes,
-  PostPublished
+  PostPublished,
 } from '../types';
 import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
@@ -58,8 +58,10 @@ async function createSingleVideoHandler({
   // as undefined here.
   const is_display_aspect_ratio_missing = display_aspect_ratio == null;
 
-  if (!is_display_aspect_ratio_missing &&
-      !VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)) {
+  if (
+    !is_display_aspect_ratio_missing &&
+    !VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)
+  ) {
     throw new Error(INVALID_VIDEO_ASPECT_RATIO);
   }
 
@@ -84,10 +86,11 @@ async function createSingleVideoHandler({
     await sleep(15000);
 
     let retry_count = 0;
-    let processed:boolean = false;
-    let uploaded_res:PostPublished = {
-        status: 'failed',
-        media: {code: ''}
+    let processed: boolean = false;
+    let uploaded_res: PostPublished = {
+      status: 'failed',
+
+      media: { code: '', upload_id: '', status: '' },
     };
 
     // Retry every 15 seconds until video is processed
@@ -117,7 +120,7 @@ async function createSingleVideoHandler({
           : `[InstagramPublisher] - Video post created: ${processed}`
       );
     }
-    return {succeeded: processed, code: uploaded_res.media.code};
+    return { succeeded: processed, code: uploaded_res.media.code };
   } catch (error) {
     throw new Error(`[InstagramPublisher] - Failed to create video - ${error}`);
   }

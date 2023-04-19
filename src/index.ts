@@ -5,6 +5,7 @@ import HTTP_CLIENT from './http';
 import { validateCookies } from './shared';
 import createSingleImageHandler from './handlers/create_one_image';
 import createImageStoryHandler from './handlers/create_image_story';
+import { LinkablePostPublished } from './types';
 
 class InstagramPublisher {
   /** @internal */
@@ -41,7 +42,7 @@ class InstagramPublisher {
     image_path: string;
     caption: string;
     location?: string;
-  }): Promise<object> {
+  }): Promise<LinkablePostPublished> {
     if (!validateCookies()) {
       await login({
         email: this._email,
@@ -66,7 +67,7 @@ class InstagramPublisher {
     images: string[];
     caption: string;
     location?: string;
-  }): Promise<object> {
+  }): Promise<LinkablePostPublished> {
     if (!validateCookies()) {
       await login({
         email: this._email,
@@ -93,7 +94,7 @@ class InstagramPublisher {
     thumbnail_path: string;
     caption: string;
     location?: string;
-  }): Promise<Object> {
+  }): Promise<LinkablePostPublished> {
     if (!validateCookies()) {
       await login({
         email: this._email,
@@ -123,7 +124,7 @@ class InstagramPublisher {
     thumbnail_path: string;
     caption: string;
     location?: string;
-  }): Promise<object> {
+  }): Promise<LinkablePostPublished> {
     if (!validateCookies()) {
       await login({
         email: this._email,

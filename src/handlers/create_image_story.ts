@@ -1,4 +1,4 @@
-import { Image, PostPublished } from '../types';
+import { Image, LinkablePostPublished, PostPublished } from '../types';
 import { validateImageExists, validateImageJPG } from './common/validators';
 import HTTP_CLIENT from '../http';
 import uploadPhoto from './common/upload_photo';
@@ -11,7 +11,7 @@ async function createImageStoryHandler({
 }: {
   image_path: string;
   verbose: boolean;
-}): Promise<boolean> {
+}): Promise<LinkablePostPublished> {
   validateImageExists(image_path);
 
   const image: Image = sizeOf(image_path);
@@ -40,7 +40,11 @@ async function createImageStoryHandler({
       `[InstagramPublisher] - Image Story Created: ${final_res.status}`
     );
 
-  return final_res.status === 'ok';
+  return {
+    succeeded: final_res.status === 'ok',
+    code: final_res.media.code,
+    pk: final_res.media.pk,
+  };
 }
 
 export default createImageStoryHandler;
