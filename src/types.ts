@@ -19,7 +19,7 @@ export interface MediaUploadRes {
   status: string;
   upload_id: string;
   code: string;
-  pk?: string;
+  pk: string;
 }
 
 export interface PostPublished {
@@ -30,7 +30,6 @@ export interface PostPublished {
 export interface LinkablePostPublished {
   succeeded: boolean;
   code: string;
-  pk?: string;
 }
 
 export interface Location {

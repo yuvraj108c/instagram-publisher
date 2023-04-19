@@ -42,8 +42,7 @@ async function createImageStoryHandler({
 
   return {
     succeeded: final_res.status === 'ok',
-    code: final_res.media.code,
-    pk: final_res.media.pk,
+    code: final_res.media.pk,
   };
 }
 
