@@ -89,8 +89,7 @@ async function createSingleVideoHandler({
     let processed: boolean = false;
     let uploaded_res: PostPublished = {
       status: 'failed',
-
-      media: { code: '', upload_id: '', status: '' },
+      media: { code: '', upload_id: '', status: '', pk: '' },
     };
 
     // Retry every 15 seconds until video is processed

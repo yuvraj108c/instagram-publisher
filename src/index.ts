@@ -148,7 +148,7 @@ class InstagramPublisher {
     image_path,
   }: {
     image_path: string;
-  }): Promise<boolean> {
+  }): Promise<LinkablePostPublished> {
     if (!validateCookies()) {
       await login({
         email: this._email,
