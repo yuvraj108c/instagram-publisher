@@ -20,8 +20,18 @@ export interface MediaUploadRes {
   upload_id: string;
 }
 
+export interface MediaUploadRes {
+  code: string;
+}
+
 export interface PostPublished {
   status: string;
+  media: MediaResultFromIG;
+}
+
+export interface LinkablePostPublished {
+  succeeded: boolean;
+  code: string;
 }
 
 export interface Location {

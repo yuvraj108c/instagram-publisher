@@ -41,7 +41,7 @@ class InstagramPublisher {
     image_path: string;
     caption: string;
     location?: string;
-  }): Promise<boolean> {
+  }): Promise<object> {
     if (!validateCookies()) {
       await login({
         email: this._email,
@@ -66,7 +66,7 @@ class InstagramPublisher {
     images: string[];
     caption: string;
     location?: string;
-  }): Promise<boolean> {
+  }): Promise<object> {
     if (!validateCookies()) {
       await login({
         email: this._email,
@@ -93,7 +93,7 @@ class InstagramPublisher {
     thumbnail_path: string;
     caption: string;
     location?: string;
-  }): Promise<boolean> {
+  }): Promise<Object> {
     if (!validateCookies()) {
       await login({
         email: this._email,
@@ -123,7 +123,7 @@ class InstagramPublisher {
     thumbnail_path: string;
     caption: string;
     location?: string;
-  }): Promise<boolean> {
+  }): Promise<object> {
     if (!validateCookies()) {
       await login({
         email: this._email,

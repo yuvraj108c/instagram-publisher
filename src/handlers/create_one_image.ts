@@ -1,4 +1,9 @@
-import { Image, LocationSearchRes, PostPublished } from '../types';
+import {
+  Image,
+  LinkablePostPublished,
+  LocationSearchRes,
+  PostPublished }
+from '../types';
 import {
   validateCaption,
   validateImageExists,
@@ -22,7 +27,7 @@ async function createSingleImageHandler({
   caption: string;
   verbose: boolean;
   location?: string;
-}): Promise<boolean> {
+}): Promise<LinkablePostPublished> {
   validateCaption(caption);
   validateImageExists(image_path);
 
@@ -95,7 +100,7 @@ async function createSingleImageHandler({
       `[InstagramPublisher] - Image Post Created: ${final_res.status}`
     );
 
-  return final_res.status === 'ok';
+  return {succeeded: final_res.status === 'ok', code: final_res.media.code};
 }
 
 export default createSingleImageHandler;

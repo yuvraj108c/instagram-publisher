@@ -1,6 +1,10 @@
 import { VALID_VIDEO_ASPECT_RATIOS, BASE_URL } from '../config';
 import { INVALID_VIDEO_ASPECT_RATIO, LOCATION_NOT_FOUND } from '../errors';
-import { LocationSearchRes, PostPublished } from '../types';
+import {
+  LinkablePostPublished,
+  LocationSearchRes,
+  PostPublished
+} from '../types';
 import { sleep } from '../shared';
 import HTTP_CLIENT from '../http';
 import {
@@ -33,7 +37,7 @@ async function createSingleVideoHandler({
   is_reel: boolean;
   location?: string;
   verbose: boolean;
-}): Promise<boolean> {
+}): Promise<LinkablePostPublished> {
   validateCaption(caption);
 
   validateImageExists(thumbnail_path, true);
@@ -50,7 +54,12 @@ async function createSingleVideoHandler({
     'streams'
   ].filter((i: any) => i.codec_type === 'video')[0];
 
-  if (!VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)) {
+  // Display Aspect Ratio is frequently listed as N/A in ffprobe, which manifests
+  // as undefined here.
+  const is_display_aspect_ratio_missing = display_aspect_ratio == null;
+
+  if (!is_display_aspect_ratio_missing &&
+      !VALID_VIDEO_ASPECT_RATIOS.find(a => a === display_aspect_ratio)) {
     throw new Error(INVALID_VIDEO_ASPECT_RATIO);
   }
 
@@ -75,11 +84,15 @@ async function createSingleVideoHandler({
     await sleep(15000);
 
     let retry_count = 0;
-    let processed: boolean = false;
+    let processed:boolean = false;
+    let uploaded_res:PostPublished = {
+        status: 'failed',
+        media: {code: ''}
+    };
 
     // Retry every 15 seconds until video is processed
     while (retry_count < 5 && processed === false) {
-      const uploaded_res = is_reel
+      uploaded_res = is_reel
         ? await _publishReel({
             caption,
             upload_id: video_uploaded.upload_id,
@@ -104,7 +117,7 @@ async function createSingleVideoHandler({
           : `[InstagramPublisher] - Video post created: ${processed}`
       );
     }
-    return processed;
+    return {succeeded: processed, code: uploaded_res.media.code};
   } catch (error) {
     throw new Error(`[InstagramPublisher] - Failed to create video - ${error}`);
   }
