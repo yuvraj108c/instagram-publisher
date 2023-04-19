@@ -106,7 +106,7 @@ async function createSingleVideoHandler({
             location,
           });
 
-      processed = uploaded_res.status == 'ok';
+      processed = uploaded_res.status === 'ok';
 
       retry_count++;
       await sleep(15000);

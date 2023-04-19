@@ -32,7 +32,7 @@ async function createImageSlideshowHandler({
   caption: string;
   location?: string;
   verbose: boolean;
-}) : Promise<LinkablePostPublished> {
+}): Promise<LinkablePostPublished> {
   _validateImages(images);
   validateCaption(caption);
 
@@ -63,10 +63,12 @@ async function createImageSlideshowHandler({
       console.info(
         `[InstagramPublisher] - Image Slideshow Created: ${createSlideshowResponse.status}`
       );
-    return {succeeded: createSlideshowResponse.status === 'ok',
-            code: createSlideshowResponse.media.code};
+    return {
+      succeeded: createSlideshowResponse.status === 'ok',
+      code: createSlideshowResponse.media.code,
+    };
   }
-  return {succeeded: false, code: ""};
+  return { succeeded: false, code: '' };
 }
 
 async function _saveSlideshow({
